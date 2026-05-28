@@ -4,44 +4,60 @@ import { useEffect, useRef, useState } from "react";
 
 const FAQS = [
   {
-    q: "Who is this workshop designed for?",
-    a: "This workshop is open to college students, fresh graduates, and early-career professionals who want to close the gap between academic learning and real industry expectations. No prior work experience is required.",
+    q: "What is the Fraylon Industry Readiness Workshop?",
+    a: "The Fraylon Industry Readiness Workshop is a practical training program designed to help students gain real-world industry skills through hands-on learning, live sessions, and project-based training.",
   },
   {
-    q: "Is the workshop fully online or in-person?",
-    a: "The program is fully remote. All live sessions, project submissions, and mentor interactions happen online — you can join from anywhere.",
+    q: "Who can participate in the workshop?",
+    a: "College students, freshers, graduates, and learners interested in improving their technical and professional skills can participate.",
   },
   {
-    q: "How long is the program?",
-    a: "The core workshop runs for 15 days with live sessions, assignments, and a final project. Post-workshop, top performers get access to the internship program which runs for 1–3 months.",
+    q: "Is the workshop conducted online or offline?",
+    a: "The workshop is conducted remotely, making it accessible for students from different locations.",
   },
   {
-    q: "Do I need to choose only one track?",
-    a: "You can register for either the Technical or Non-Technical track based on your interest. If you want exposure to both, you can let us know during onboarding and we'll guide you accordingly.",
+    q: "What skills will participants learn?",
+    a: "Participants will gain industry-oriented technical skills, teamwork experience, communication skills, and practical project execution knowledge.",
   },
   {
-    q: "What happens after the workshop ends?",
-    a: "You receive an industry certificate on completion. Top performers are shortlisted for paid/stipend-based internships within Fraylon or our partner companies. You also walk away with a portfolio of projects.",
+    q: "Will participants work on real-time projects?",
+    a: "Yes, the program includes practical assignments and real-world project-based learning activities.",
   },
   {
-    q: "Is there a certificate at the end?",
-    a: "Yes. Every participant who completes the program milestones receives a Fraylon Industry Readiness Certificate. Interns receive a separate internship completion letter.",
+    q: "Are certificates provided after completion?",
+    a: "Yes, participants will receive a certificate upon successful completion of the workshop program.",
   },
   {
-    q: "What is the fee for the workshop?",
-    a: "Registration details including fees will be shared during the registration process. We keep it affordable — our goal is access, not profit.",
+    q: "Is there any internship or full-time opportunity?",
+    a: "Yes, based on performance during the workshop and hackathon activities, selected participants may receive internship or full-time role opportunities with Fraylon Technologies.",
   },
   {
-    q: "Will there be live sessions or is it pre-recorded?",
-    a: "The program is built around live sessions with mentors. Recordings are provided for each session so you can revisit them at your own pace.",
+    q: "Do participants need prior experience?",
+    a: "No prior industry experience is required. Beginners and learners at different skill levels can join.",
   },
   {
-    q: "How are mentors assigned?",
-    a: "Mentors are assigned based on the track and domain you select during registration. You'll have dedicated mentors for your core domain plus access to the broader mentor pool for Q&A.",
+    q: "How long is the workshop program?",
+    a: "The duration may vary depending on the workshop module and training schedule.",
   },
   {
-    q: "Can I get a refund if I am unable to attend?",
-    a: "We have a fair refund policy. If you withdraw before the program begins, a full refund is processed. Mid-program withdrawals are reviewed case by case. Reach out to us and we'll sort it out.",
+    q: "What makes this workshop different?",
+    a: "The workshop focuses on practical implementation, industry workflows, mentorship, and collaborative learning instead of only theoretical teaching.",
+  },
+  {
+    q: "Will mentorship be provided during the program?",
+    a: "Yes, participants will receive guidance and mentorship throughout the training process.",
+  },
+  {
+    q: "How can colleges collaborate with Fraylon Technologies?",
+    a: "Colleges can collaborate for workshops, hackathons, technical sessions, and student development initiatives by contacting Fraylon Technologies.",
+  },
+  {
+    q: "Is the workshop suitable for non-technical students?",
+    a: "Yes, both technical and non-technical students can participate depending on the workshop category.",
+  },
+  {
+    q: "How can students register for the workshop?",
+    a: "Students can register through the official registration form or by contacting the Fraylon team directly.",
   },
 ];
 

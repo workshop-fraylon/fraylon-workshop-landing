@@ -6,30 +6,35 @@ const STEPS = [
   {
     number: "01",
     day: "Day 1",
+    date: "5 June 2026",
     phase: "Registration",
     desc: "Complete your registration and receive portal access, your welcome kit, and an invite to the student community.",
   },
   {
     number: "02",
     day: "Days 2 – 3",
+    date: "6 – 7 June 2026",
     phase: "Orientation",
     desc: "Meet your mentors, align on tools and workflows, and set your learning goals for the program ahead.",
   },
   {
     number: "03",
     day: "Days 4 – 11",
+    date: "8 – 15 June 2026",
     phase: "Live Sessions",
     desc: "Eight days of hands-on live training. Daily tasks, real feedback from mentors, and execution-first learning across your domain.",
   },
   {
     number: "04",
     day: "Days 12 – 13",
+    date: "16 – 17 June 2026",
     phase: "Project",
     desc: "Build a full industry-grade project in teams. Apply everything from the sessions and get a final mentor review.",
   },
   {
     number: "05",
     day: "Days 14 – 15",
+    date: "18 – 20 June 2026",
     phase: "Certification",
     desc: "Present your project, earn your industry-recognised certificate, and get introduced to our hiring partner network.",
   },
@@ -144,6 +149,7 @@ export default function TimelineSection() {
                     {/* Content */}
                     <div className="flex-1 pb-2 pt-1">
                       <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">{step.day}</p>
+                      <p className="mt-0.5 text-xs font-medium text-emerald-600">{step.date}</p>
                       <h3 className="mt-1 text-lg font-bold text-slate-900">{step.phase}</h3>
                       <p className="mt-2 text-sm leading-relaxed text-slate-500">{step.desc}</p>
                     </div>
@@ -165,7 +171,7 @@ export default function TimelineSection() {
         >
           <div>
             <p className="text-base font-semibold text-slate-800">15 days. Structured. Practical. Recognised.</p>
-            <p className="mt-1 text-sm text-slate-400">Next cohort starts July 2025.</p>
+            <p className="mt-1 text-sm text-slate-400">5th June 2026 – 20th June 2026</p>
           </div>
           <a
             href="#register"
@@ -185,6 +191,7 @@ function StepCard({ step, align }: { step: typeof STEPS[number]; align: "left" |
   return (
     <div className={`group w-full max-w-[380px] py-6 ${align === "right" ? "text-right" : "text-left"}`}>
       <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">{step.day}</p>
+      <p className="mt-0.5 text-xs font-medium text-emerald-600">{step.date}</p>
       <h3 className="mt-1.5 text-xl font-bold text-slate-900 transition-colors duration-200 group-hover:text-emerald-600">
         {step.phase}
       </h3>
