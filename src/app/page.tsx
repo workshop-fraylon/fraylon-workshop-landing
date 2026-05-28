@@ -1,0 +1,32 @@
+import AboutSection from "@/components/AboutSection";
+import Footer from "@/components/Footer";
+import HeroSection from "@/components/HeroSection";
+import Navbar from "@/components/Navbar";
+import TimelineSection from "@/components/TimelineSection";
+import TracksSection from "@/components/TracksSection";
+import WhatYoullLearnSection from "@/components/WhatYoullLearnSection";
+import MentorsSection from "@/components/MentorsSection";
+import FAQSection from "@/components/FAQSection";
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-white text-slate-900">
+      <Navbar />
+
+      <main>
+        <HeroSection />
+        <AboutSection />
+        <TimelineSection />
+        <TracksSection />
+        <WhatYoullLearnSection />
+        <MentorsSection />
+        <FAQSection />
+
+        {/* Upcoming sections — anchors kept so navbar active tracking still works */}
+        <section id="register"         className="scroll-mt-[70px]" />
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
