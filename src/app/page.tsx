@@ -8,6 +8,8 @@ import WhatYoullLearnSection from "@/components/WhatYoullLearnSection";
 import MentorsSection from "@/components/MentorsSection";
 import FAQSection from "@/components/FAQSection";
 
+import RegistrationModal from "@/components/RegistrationModal";
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
@@ -22,8 +24,7 @@ export default function Home() {
         <MentorsSection />
         <FAQSection />
 
-        {/* Upcoming sections — anchors kept so navbar active tracking still works */}
-        <section id="register"         className="scroll-mt-[70px]" />
+        <RegistrationModal />
       </main>
 
       <Footer />
