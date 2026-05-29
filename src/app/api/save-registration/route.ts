@@ -15,11 +15,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Fallback to NEXT_PUBLIC_SUPABASE_URL if SUPABASE_URL is missing
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in environment variables.");
+      return NextResponse.json(
+        { success: false, error: "Server configuration error." },
+        { status: 500 }
+      );
+    }
+
     // Initialize the Supabase admin client using service role key (bypasses RLS)
-    const supabase = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const payload = {
       full_name: fullName,
