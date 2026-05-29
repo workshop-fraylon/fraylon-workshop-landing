@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+/* ─── Fraylon brand design tokens ─────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --color-bg-base:    #ffffff;
+  --color-bg-surface: #f8fafc;
+  --color-bg-raised:  #f1f5f9;
+
+  /* Borders */
+  --color-border:     #e2e8f0;
+  --color-border-strong: #cbd5e1;
+
+  /* Brand – navy */
+  --color-navy:       #1e3a5f;
+  --color-navy-dark:  #0f2340;
+  --color-navy-light: #2d5282;
+
+  /* Brand – teal / cyan (primary accent) */
+  --color-primary:    #0891b2;
+  --color-primary-light: #06b6d4;
+  --color-primary-dark:  #0e7490;
+  --color-primary-glow:  rgba(8, 145, 178, 0.18);
+
+  /* Brand – from logo gradient (green accent) */
+  --color-accent:     #10b981;
+
+  /* Text */
+  --color-text-primary:   #0f2340;
+  --color-text-secondary: #475569;
+  --color-text-muted:     #94a3b8;
+  --color-text-on-dark:   #ffffff;
+}
+
+@theme inline {
+  /* Surface / bg */
+  --color-bg-base:       var(--color-bg-base);
+  --color-bg-surface:    var(--color-bg-surface);
+  --color-bg-raised:     var(--color-bg-raised);
+  --color-border:        var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+
+  /* Brand */
+  --color-navy:          var(--color-navy);
+  --color-navy-dark:     var(--color-navy-dark);
+  --color-navy-light:    var(--color-navy-light);
+  --color-primary:       var(--color-primary);
+  --color-primary-light: var(--color-primary-light);
+  --color-primary-dark:  var(--color-primary-dark);
+  --color-primary-glow:  var(--color-primary-glow);
+  --color-accent:        var(--color-accent);
+
+  /* Text */
+  --color-text-primary:   var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted:     var(--color-text-muted);
+  --color-text-on-dark:   var(--color-text-on-dark);
+
+  /* Legacy aliases */
+  --color-background: var(--color-bg-base);
+  --color-foreground: var(--color-text-primary);
+
+  /* Fonts */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* ── Animation shorthands ───────────────────────────────────────────── */
+  --animate-slide-down-in:  slide-down-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-fade-in-up:     fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-fade-in-right:  fade-in-right 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-fade-in:        fade-in 0.5s ease-out both;
+  --animate-active-dot-pop: active-dot-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-float:          float 6s ease-in-out infinite;
+  --animate-float-slow:     float 9s ease-in-out infinite;
+
+  /* ── Keyframes ──────────────────────────────────────────────────────── */
+  @keyframes slide-down-in {
+    from { opacity: 0; transform: translateY(-100%); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fade-in-right {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes active-dot-pop {
+    from { opacity: 0; transform: translateX(-50%) scale(0); }
+    to   { opacity: 1; transform: translateX(-50%) scale(1); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-14px); }
+  }
+
+  @keyframes pulse-ring {
+    0%   { transform: scale(1);    opacity: 0.5; }
+    100% { transform: scale(1.6);  opacity: 0; }
+  }
+
+  @keyframes shimmer {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(100%); }
+  }
+}
+
+/* ─── Base styles ─────────────────────────────────────────────────────────── */
+html  { scroll-behavior: smooth; }
+
+body {
+  background: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* ─── Utility: teal shine sweep on buttons ────────────────────────────────── */
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%);
+  transform: translateX(-100%);
+  transition: none;
+}
+.btn-shine:hover::after {
+  transform: translateX(100%);
+  transition: transform 0.45s ease;
+}
