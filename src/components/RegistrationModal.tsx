@@ -29,6 +29,7 @@ export default function RegistrationModal() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [referralCode, setReferralCode] = useState("");
 
   const [activeDomain, setActiveDomain] = useState<string | null>(null);
   const [institutionQuery, setInstitutionQuery] = useState("");
@@ -151,10 +152,11 @@ export default function RegistrationModal() {
                           fullName,
                           email,
                           phone,
+                          referralCode,
                           collegeName: institutionQuery,
                           domainTrack: activeDomain,
                           razorpay_payment_id: response.razorpay_payment_id,
-                        }),
+}),
                       });
 
                       const result = await res.json();
@@ -164,8 +166,10 @@ export default function RegistrationModal() {
                         setFullName("");
                         setEmail("");
                         setPhone("");
+                        setReferralCode("");
                         setInstitutionQuery("");
                         setActiveDomain(null);
+
                         closeModal();
                         alert("Registration successful! We'll confirm your enrollment within one business day.");
                       } else {
@@ -235,6 +239,24 @@ export default function RegistrationModal() {
                       required
                     />
                   </div>
+                  <div>
+                      <label
+                      htmlFor="referralCode"
+                      className="block text-sm font-medium text-slate-700 mb-1"
+                      >
+                       Referral Code
+                       <span className="text-slate-400 text-xs ml-1">(Optional)</span>
+                      </label>
+
+                       <input
+                       type="text"
+                       id="referralCode"
+                       value={referralCode}
+                       onChange={(e) => setReferralCode(e.target.value)}
+                       className="w-full rounded-lg border border-slate-300 px-4 py-2.5 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
+                        placeholder="Enter ambassador referral code"
+                        />
+                      </div>
                   <div className="relative">
                     <label htmlFor="institution" className="block text-sm font-medium text-slate-700 mb-1">College / Institution</label>
                     <input 
