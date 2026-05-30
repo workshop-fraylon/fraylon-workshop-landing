@@ -183,18 +183,15 @@ const modalClose = document.getElementById('modalClose');
 const modalContinue = document.getElementById('modalContinue');
 
 function openModal(data) {
-  // Build a clean summary
   modalSummary.innerHTML = `
     <dl>
       <dt>Name</dt><dd>${escapeHTML(data.fullName)}</dd>
       <dt>Email</dt><dd>${escapeHTML(data.email)}</dd>
       <dt>Domain</dt><dd>${escapeHTML(data.domain)}</dd>
       <dt>Year</dt><dd>${escapeHTML(data.year)}</dd>
+      <dt>Referral</dt><dd>${escapeHTML(data.referralCode || "N/A")}</dd>
     </dl>
   `;
-  successModal.hidden = false;
-  requestAnimationFrame(() => successModal.classList.add('show'));
-  document.body.style.overflow = 'hidden';
 }
 
 function closeModal() {
