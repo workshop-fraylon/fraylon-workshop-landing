@@ -2,41 +2,49 @@
 
 import { useEffect, useRef, useState } from "react";
 
+const SCHEDULE_META = [
+  { label: "Duration",               value: "15 Days" },
+  { label: "Start Date",             value: "5th June 2026" },
+  { label: "End Date",               value: "20th June 2026" },
+  { label: "Daily Session Duration", value: "2 Hours" },
+  { label: "Session Timing",         value: "Every Evening" },
+];
+
 const STEPS = [
   {
     number: "01",
     day: "Day 1",
     date: "5 June 2026",
-    phase: "Registration",
-    desc: "Complete your registration and receive portal access, your welcome kit, and an invite to the student community.",
+    phase: "Kickoff & Orientation",
+    desc: "Receive portal access and your welcome kit. Meet your mentors, get introduced to the cohort, and align on tools, workflows, and learning goals.",
   },
   {
     number: "02",
-    day: "Days 2 – 3",
-    date: "6 – 7 June 2026",
-    phase: "Orientation",
-    desc: "Meet your mentors, align on tools and workflows, and set your learning goals for the program ahead.",
+    day: "Days 2 – 6",
+    date: "6 – 11 June 2026",
+    phase: "Core Live Sessions — Week 1",
+    desc: "Five evening sessions of domain-focused live training. Each session runs 2 hours with hands-on tasks, mentor feedback, and daily deliverables.",
   },
   {
     number: "03",
-    day: "Days 4 – 11",
-    date: "8 – 15 June 2026",
-    phase: "Live Sessions",
-    desc: "Eight days of hands-on live training. Daily tasks, real feedback from mentors, and execution-first learning across your domain.",
+    day: "Days 7 – 12",
+    date: "12 – 17 June 2026",
+    phase: "Core Live Sessions — Week 2",
+    desc: "Deep-dive sessions covering advanced concepts, industry workflows, and collaborative exercises. Begin working on your final project.",
   },
   {
     number: "04",
-    day: "Days 12 – 13",
-    date: "16 – 17 June 2026",
-    phase: "Project",
-    desc: "Build a full industry-grade project in teams. Apply everything from the sessions and get a final mentor review.",
+    day: "Days 13 – 14",
+    date: "18 – 19 June 2026",
+    phase: "Project Submission",
+    desc: "Complete and submit your industry-grade project. Receive a final mentor review and prepare your demo for the closing presentation.",
   },
   {
     number: "05",
-    day: "Days 14 – 15",
-    date: "18 – 20 June 2026",
-    phase: "Certification",
-    desc: "Present your project, earn your industry-recognised certificate, and get introduced to our hiring partner network.",
+    day: "Day 15",
+    date: "20 June 2026",
+    phase: "Demo Day & Certification",
+    desc: "Present your project to a panel of mentors. Top performers are shortlisted for internships. All finishers receive their industry certificate.",
   },
 ];
 
@@ -69,7 +77,7 @@ export default function TimelineSection() {
 
         {/* ── Header ──────────────────────────────────────────────────────── */}
         <div
-          className="mb-20 transition-all duration-700"
+          className="mb-12 transition-all duration-700"
           style={{ opacity: inView ? 1 : 0, transform: inView ? "none" : "translateY(20px)" }}
         >
           <div className="flex items-center gap-2 mb-3">
@@ -79,11 +87,31 @@ export default function TimelineSection() {
             </span>
           </div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-            Timeline
+            Timeline &amp; Schedule
           </h2>
           <p className="mt-3 max-w-lg text-base text-slate-500">
-            Five structured phases. Each one builds directly on the last.
+            Five structured phases across 15 days — every evening, 2 hours of live, practical training.
           </p>
+        </div>
+
+        {/* ── Schedule meta pills ──────────────────────────────────────────── */}
+        <div
+          className="mb-16 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
+          style={{
+            opacity: inView ? 1 : 0,
+            transform: inView ? "none" : "translateY(16px)",
+            transition: "opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s",
+          }}
+        >
+          {SCHEDULE_META.map((item) => (
+            <div
+              key={item.label}
+              className="flex flex-col gap-0.5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
+            >
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">{item.label}</p>
+              <p className="text-sm font-semibold text-slate-800">{item.value}</p>
+            </div>
+          ))}
         </div>
 
         {/* ── Timeline ────────────────────────────────────────────────────── */}
@@ -158,6 +186,22 @@ export default function TimelineSection() {
               );
             })}
           </div>
+        </div>
+
+        {/* ── Day-wise note ─────────────────────────────────────────────────── */}
+        <div
+          className="mt-12 flex items-start gap-3 rounded-xl border border-emerald-100 bg-emerald-50 px-5 py-4"
+          style={{
+            opacity: inView ? 1 : 0,
+            transition: "opacity 0.6s ease 0.85s",
+          }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+          </svg>
+          <p className="text-sm leading-relaxed text-emerald-800">
+            <span className="font-semibold">Detailed Day-wise Schedule (Day 1 to Day 15)</span> will be shared with all participants after successful registration and joining.
+          </p>
         </div>
 
         {/* ── Footer ────────────────────────────────────────────────────────── */}
