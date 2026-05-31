@@ -40,7 +40,7 @@ export default function HeroSection() {
             style={{ animation: "fade-in-up 0.65s 0.32s cubic-bezier(0.16,1,0.3,1) both" }}
           >
             We help institutions improve student industry readiness through
-            practical training programs — taught by real-world mentors and
+            practical training programs taught by real world mentors and
             built for the skills employers actually need.
           </p>
 
@@ -51,8 +51,8 @@ export default function HeroSection() {
           >
             {[
               { value: "500+", label: "Students Trained" },
-              { value: "20+",  label: "Industry Mentors" },
-              { value: "10",   label: "Domains Covered" },
+              { value: "20+", label: "Industry Mentors" },
+              { value: "10", label: "Domains Covered" },
             ].map((stat) => (
               <div key={stat.label} className="flex flex-col gap-0.5">
                 <span className="text-2xl font-bold text-[--color-navy] sm:text-3xl">
@@ -136,9 +136,9 @@ function WorkshopVisual() {
           <div className="flex flex-col gap-4">
             {[
               { label: "AI & Prompt Engineering", pct: 92, color: "var(--color-primary)" },
-              { label: "Web Development",         pct: 88, color: "var(--color-accent)" },
-              { label: "Cloud & DevOps",          pct: 74, color: "var(--color-navy)" },
-              { label: "UI/UX Design",            pct: 80, color: "#8b5cf6" },
+              { label: "Web Development", pct: 88, color: "var(--color-accent)" },
+              { label: "Cloud & DevOps", pct: 74, color: "var(--color-navy)" },
+              { label: "UI/UX Design", pct: 80, color: "#8b5cf6" },
             ].map((item) => (
               <div key={item.label} className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
@@ -162,7 +162,7 @@ function WorkshopVisual() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
-                {["0EA5E9","0F2340","10B981","8B5CF6","F59E0B"].map((hex, i) => (
+                {["0EA5E9", "0F2340", "10B981", "8B5CF6", "F59E0B"].map((hex, i) => (
                   <div
                     key={i}
                     className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white text-xs font-bold text-white"
@@ -186,8 +186,8 @@ function WorkshopVisual() {
 
       {/* Floating badge — top right */}
       <div className="animate-float absolute -right-4 -top-4 z-20 rounded-xl border border-[--color-border] bg-white px-4 py-3 shadow-lg">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[--color-text-muted]">Next Batch</p>
-          <p className="text-base font-bold text-[--color-navy]">5 – 20 Jun 2026</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-[--color-text-muted]">Next Batch</p>
+        <p className="text-base font-bold text-[--color-navy]">5 – 20 Jun 2026</p>
       </div>
 
       {/* Floating badge — bottom left */}

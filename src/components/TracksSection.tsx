@@ -17,11 +17,11 @@ const TRACKS = [
     accentBorder: "#b2ebf2",
     points: [
       { title: "AI & Prompt Engineering", desc: "Learn to work with LLMs, build AI-powered workflows, and master prompt design for real products." },
-      { title: "Web Development", desc: "Full-stack development with modern frameworks — from UI to APIs to deployment." },
+      { title: "Web Development", desc: "Full-stack development with modern frameworks  from UI to APIs to deployment." },
       { title: "UI/UX Design", desc: "Figma, design systems, user research, and building interfaces people actually enjoy using." },
       { title: "Cybersecurity", desc: "Understand threat models, basic pen-testing concepts, and how to build secure applications." },
       { title: "Cloud & DevOps", desc: "CI/CD pipelines, Docker, cloud deployment (AWS/GCP), and infrastructure fundamentals." },
-      { title: "SaaS Product Building", desc: "Go from idea to a working SaaS — architecture, billing, auth, and launch strategy." },
+      { title: "SaaS Product Building", desc: "Go from idea to a working SaaS architecture, billing, auth, and launch strategy." },
     ],
   },
   {
