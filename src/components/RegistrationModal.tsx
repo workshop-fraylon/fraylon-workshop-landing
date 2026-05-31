@@ -194,6 +194,14 @@ export default function RegistrationModal() {
                   config: {
                     display: {
                       hide: [{ method: "paylater" }],
+                      blocks: {
+                        qr: {
+                          name: "Pay via QR Code",
+                          instruments: [{ method: "upi", flows: ["qr"] }],
+                        },
+                      },
+                      sequence: ["block.qr", "block.default"],
+                      preferences: { show_default_blocks: true },
                     },
                   },
 
