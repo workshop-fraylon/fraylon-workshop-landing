@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { fullName, email, phone, collegeName, domainTrack, razorpay_payment_id } = body;
+    const { fullName, email, phone, collegeName, domainTrack, razorpay_payment_id, referralCode } = body;
 
     // Basic validation — all fields are required
     if (!fullName || !email || !phone || !collegeName || !domainTrack || !razorpay_payment_id) {
@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
       college_name: collegeName,
       domain_track: domainTrack,
       payment_id: razorpay_payment_id,
+      referral_code: referralCode || null,
     };
 
 

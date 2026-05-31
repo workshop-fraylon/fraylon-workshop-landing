@@ -107,7 +107,7 @@ export default function RegistrationModal() {
             </ul>
             <div className="mt-auto pt-8 border-t border-slate-200">
               <strong className="block text-slate-900 mb-1">Need help?</strong>
-              <span className="text-slate-600">Email <a href="mailto:contact@fraylontech.com" className="text-emerald-600 hover:underline">contact@fraylontech.com</a></span>
+              <span className="text-slate-600">Email <a href="mailto:contact@fraylontech.com" className="text-emerald-600 hover:underline">workshopfraylon@gmail.com</a></span>
             </div>
           </div>
 

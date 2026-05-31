@@ -9,7 +9,7 @@ const SKILLS = [
   "Web Development",
   "UI/UX Design",
   "Cybersecurity",
-  "Cloud & DevOps",
+
   "SaaS Product Building",
   "Digital Marketing",
   "HR & Recruitment",
@@ -52,7 +52,7 @@ const OUTCOMES = [
       </svg>
     ),
     title: "Team Experience",
-    desc: "Collaborate in squads — just like you would in a real product team.",
+    desc: "Collaborate in squads just like you would in a real product team.",
   },
   {
     icon: (
@@ -61,7 +61,7 @@ const OUTCOMES = [
       </svg>
     ),
     title: "Presentation Skills",
-    desc: "Demo your work to a panel — practice pitching and defending decisions.",
+    desc: "Demo your work to a panel practice pitching and defending decisions.",
   },
   {
     icon: (
