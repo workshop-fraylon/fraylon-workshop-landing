@@ -74,53 +74,62 @@ export default function RegistrationModal() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm overflow-y-auto p-4 sm:p-6" onClick={closeModal}>
+    <div className="fixed inset-0 z-[100] flex items-start justify-center bg-slate-900/60 backdrop-blur-sm overflow-y-auto p-3 sm:p-6 sm:items-center" onClick={closeModal}>
       <div
-        className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl my-8 overflow-hidden animate-slide-down-in"
+        className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl my-4 sm:my-8 overflow-hidden animate-slide-down-in"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={closeModal}
-          className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"
+          className="absolute top-3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"
           aria-label="Close modal"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
             <path d="M18 6L6 18M6 6l12 12" />
           </svg>
         </button>
 
-        <div className="flex flex-col md:flex-row h-full">
-          {/* Left Side: Intro */}
-          <div className="bg-slate-50 p-8 md:p-12 md:w-1/3 border-b md:border-b-0 md:border-r border-slate-200 flex flex-col justify-center">
+        <div className="flex flex-col md:flex-row">
+          {/* Left Side: Intro — hidden on mobile, visible md+ */}
+          <div className="hidden md:flex bg-slate-50 p-10 md:w-1/3 border-r border-slate-200 flex-col justify-center">
             <span className="text-emerald-600 font-semibold text-sm uppercase tracking-wider mb-2 block">Registration</span>
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Reserve your seat</h2>
-            <p className="text-slate-600 mb-8">
-              Complete the form and a Fraylon advisor will confirm your enrollment within one business day. We respect your time and your inbox.
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">Reserve your seat</h2>
+            <p className="text-slate-600 mb-8 text-sm leading-relaxed">
+              Complete the form and a Fraylon advisor will confirm your enrollment within one business day.
             </p>
-            <ul className="space-y-4 mb-8 text-slate-700">
+            <ul className="space-y-3 mb-8 text-slate-700 text-sm">
               <li className="flex items-center gap-3">
-                <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
+                <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500"></span>
                 Flexible rescheduling
               </li>
               <li className="flex items-center gap-3">
-                <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
+                <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500"></span>
                 Invoice billing available
               </li>
               <li className="flex items-center gap-3">
-                <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
+                <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500"></span>
                 Confirmation within one business day
               </li>
             </ul>
-            <div className="mt-auto pt-8 border-t border-slate-200">
-              <strong className="block text-slate-900 mb-1">Need help?</strong>
-              <span className="text-slate-600">Email <a href="mailto:contact@fraylontech.com" className="text-emerald-600 hover:underline">workshopfraylon@gmail.com</a></span>
+            <div className="mt-auto pt-6 border-t border-slate-200">
+              <strong className="block text-slate-900 mb-1 text-sm">Need help?</strong>
+              <span className="text-slate-600 text-sm">Email <a href="mailto:workshopfraylon@gmail.com" className="text-emerald-600 hover:underline">workshopfraylon@gmail.com</a></span>
             </div>
           </div>
 
-          {/* Right Side: Form */}
-          <div className="p-8 md:p-12 md:w-2/3 max-h-[80vh] overflow-y-auto">
+          {/* Right Side: Form — full width on mobile */}
+          <div className="w-full md:w-2/3 flex flex-col max-h-[92dvh] md:max-h-[88vh] overflow-y-auto">
+
+            {/* Mobile-only compact header */}
+            <div className="md:hidden sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-4 py-3">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-widest text-emerald-600">Registration</p>
+                <p className="text-base font-bold text-slate-900">Reserve your seat</p>
+              </div>
+              <a href="mailto:workshopfraylon@gmail.com" className="text-xs text-emerald-600 underline underline-offset-2">Need help?</a>
+            </div>
             <form
-              className="space-y-10"
+              className="space-y-8 p-5 sm:p-8 md:p-10"
               onSubmit={async (e) => {
                 e.preventDefault();
 

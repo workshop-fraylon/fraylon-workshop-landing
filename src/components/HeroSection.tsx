@@ -185,14 +185,14 @@ function WorkshopVisual() {
       </div>
 
       {/* Floating badge — top right */}
-      <div className="animate-float absolute -right-4 -top-4 z-20 rounded-xl border border-[--color-border] bg-white px-4 py-3 shadow-lg">
+      <div className="animate-float absolute -right-2 -top-2 z-20 rounded-xl border border-[--color-border] bg-white px-3 py-2 shadow-lg sm:-right-4 sm:-top-4 sm:px-4 sm:py-3">
         <p className="text-xs font-semibold uppercase tracking-widest text-[--color-text-muted]">Next Batch</p>
-        <p className="text-base font-bold text-[--color-navy]">5 – 20 Jun 2026</p>
+        <p className="text-sm font-bold text-[--color-navy] sm:text-base">5 – 20 Jun 2026</p>
       </div>
 
       {/* Floating badge — bottom left */}
       <div
-        className="animate-float-slow absolute -bottom-4 -left-4 z-20 flex items-center gap-3 rounded-xl border border-[--color-border] bg-white px-4 py-3 shadow-lg"
+        className="animate-float-slow absolute -bottom-2 -left-2 z-20 flex items-center gap-2 rounded-xl border border-[--color-border] bg-white px-3 py-2 shadow-lg sm:-bottom-4 sm:-left-4 sm:gap-3 sm:px-4 sm:py-3"
         style={{ animationDelay: "1.5s" }}
       >
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[--color-accent]/10">
