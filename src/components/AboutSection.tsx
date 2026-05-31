@@ -145,7 +145,7 @@ export default function AboutSection() {
               83% of graduates lack the practical skills employers need on day one.
             </p>
             <p className="mt-2 text-sm text-slate-500">
-              We fix that — one cohort at a time.
+              We fix that one cohort at a time.
             </p>
           </div>
           <a
