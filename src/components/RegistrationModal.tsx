@@ -107,7 +107,7 @@ export default function RegistrationModal() {
             </ul>
             <div className="mt-auto pt-8 border-t border-slate-200">
               <strong className="block text-slate-900 mb-1">Need help?</strong>
-              <span className="text-slate-600">Email <a href="mailto:workshopfraylon@gmail.com" className="text-emerald-600 hover:underline">contact@fraylontech.com</a></span>
+              <span className="text-slate-600">Email <a href="mailto:workshopfraylon@gmail.com" className="text-emerald-600 hover:underline">workshopfraylon@gmail.com</a></span>
             </div>
           </div>
 
@@ -156,7 +156,7 @@ export default function RegistrationModal() {
                           collegeName: institutionQuery,
                           domainTrack: activeDomain,
                           razorpay_payment_id: response.razorpay_payment_id,
-}),
+                        }),
                       });
 
                       const result = await res.json();
@@ -240,28 +240,28 @@ export default function RegistrationModal() {
                     />
                   </div>
                   <div>
-                      <label
+                    <label
                       htmlFor="referralCode"
                       className="block text-sm font-medium text-slate-700 mb-1"
-                      >
-                       Referral Code
-                       <span className="text-slate-400 text-xs ml-1">(Optional)</span>
-                      </label>
+                    >
+                      Referral Code
+                      <span className="text-slate-400 text-xs ml-1">(Optional)</span>
+                    </label>
 
-                       <input
-                       type="text"
-                       id="referralCode"
-                       value={referralCode}
-                       onChange={(e) => setReferralCode(e.target.value)}
-                       className="w-full rounded-lg border border-slate-300 px-4 py-2.5 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
-                        placeholder="Enter ambassador referral code"
-                        />
-                      </div>
+                    <input
+                      type="text"
+                      id="referralCode"
+                      value={referralCode}
+                      onChange={(e) => setReferralCode(e.target.value)}
+                      className="w-full rounded-lg border border-slate-300 px-4 py-2.5 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
+                      placeholder="Enter ambassador referral code"
+                    />
+                  </div>
                   <div className="relative">
                     <label htmlFor="institution" className="block text-sm font-medium text-slate-700 mb-1">College / Institution</label>
-                    <input 
-                      type="text" 
-                      id="institution" 
+                    <input
+                      type="text"
+                      id="institution"
                       value={institutionQuery}
                       onChange={(e) => {
                         setInstitutionQuery(e.target.value);
@@ -269,16 +269,16 @@ export default function RegistrationModal() {
                       }}
                       onFocus={() => setShowUniversities(true)}
                       onBlur={() => setTimeout(() => setShowUniversities(false), 200)}
-                      className="w-full rounded-lg border border-slate-300 px-4 py-2.5 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors" 
+                      className="w-full rounded-lg border border-slate-300 px-4 py-2.5 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
                       placeholder="Search or enter your college..."
-                      required 
+                      required
                       autoComplete="off"
                     />
                     {showUniversities && filteredUniversities.length > 0 && (
                       <ul className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                         {filteredUniversities.map((uni) => (
-                          <li 
-                            key={uni} 
+                          <li
+                            key={uni}
                             onMouseDown={() => {
                               setInstitutionQuery(uni);
                               setShowUniversities(false);
@@ -302,14 +302,14 @@ export default function RegistrationModal() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {["AI & Prompt Engineering", "Web Development", "UI/UX Design", "Cybersecurity", "Cloud & DevOps", "Digital Marketing"].map(domain => (
+                  {["AI & Prompt Engineering", "Web Development", "UI/UX Design", "Cybersecurity", "Digital Marketing"].map(domain => (
                     <button
                       key={domain}
                       type="button"
                       onClick={() => setActiveDomain(domain)}
                       className={`flex flex-col items-start p-4 rounded-xl border text-left transition-all ${activeDomain === domain
-                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
-                          : "border-slate-200 hover:border-emerald-300 hover:bg-slate-50"
+                        ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
+                        : "border-slate-200 hover:border-emerald-300 hover:bg-slate-50"
                         }`}
                     >
                       <span className={`font-semibold ${activeDomain === domain ? "text-emerald-700" : "text-slate-900"}`}>{domain}</span>
