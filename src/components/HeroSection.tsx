@@ -137,7 +137,7 @@ function WorkshopVisual() {
             {[
               { label: "AI & Prompt Engineering", pct: 92, color: "var(--color-primary)" },
               { label: "Web Development", pct: 88, color: "var(--color-accent)" },
-              { label: "Cloud & DevOps", pct: 74, color: "var(--color-navy)" },
+
               { label: "UI/UX Design", pct: 80, color: "#8b5cf6" },
             ].map((item) => (
               <div key={item.label} className="flex flex-col gap-1.5">
