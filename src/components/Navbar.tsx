@@ -4,19 +4,19 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 const NAV_LINKS = [
-  { label: "About",             href: "#about",            sectionId: "about" },
-  { label: "Timeline",          href: "#timeline",         sectionId: "timeline" },
-  { label: "Domains",           href: "#domains",          sectionId: "domains" },
+  { label: "About", href: "#about", sectionId: "about" },
+  { label: "Timeline", href: "#timeline", sectionId: "timeline" },
+  { label: "Domains", href: "#domains", sectionId: "domains" },
   { label: "What you'll learn", href: "#what-youll-learn", sectionId: "what-youll-learn" },
-  { label: "Mentors",           href: "#mentors",          sectionId: "mentors" },
-  { label: "FAQ",               href: "#faq",              sectionId: "faq" },
+  // { label: "Mentors", href: "#mentors", sectionId: "mentors" },
+  { label: "FAQ", href: "#faq", sectionId: "faq" },
 ] as const;
 
 type SectionId = (typeof NAV_LINKS)[number]["sectionId"];
 
 export default function Navbar() {
-  const [isOpen,        setIsOpen]        = useState(false);
-  const [isScrolled,    setIsScrolled]    = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionId | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -65,11 +65,10 @@ export default function Navbar() {
 
   return (
     <header
-      className={`animate-slide-down-in fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        isScrolled
-          ? "bg-white shadow-md shadow-slate-200/80 border-b border-slate-100"
-          : "bg-white/90 border-b border-slate-100/60 backdrop-blur-sm"
-      }`}
+      className={`animate-slide-down-in fixed inset-x-0 top-0 z-50 transition-all duration-500 ${isScrolled
+        ? "bg-white shadow-md shadow-slate-200/80 border-b border-slate-100"
+        : "bg-white/90 border-b border-slate-100/60 backdrop-blur-sm"
+        }`}
     >
       <nav className="mx-auto flex h-[70px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
@@ -150,9 +149,8 @@ export default function Navbar() {
 
       {/* ── Mobile: backdrop ────────────────────────────────────────────────── */}
       <div
-        className={`fixed inset-0 top-[70px] bg-black/25 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${
-          isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
-        }`}
+        className={`fixed inset-0 top-[70px] bg-black/25 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+          }`}
         onClick={closeMenu}
         aria-hidden="true"
       />
@@ -160,9 +158,8 @@ export default function Navbar() {
       {/* ── Mobile: drawer ──────────────────────────────────────────────────── */}
       <div
         className={`fixed inset-x-0 top-[70px] z-40 overflow-hidden border-b border-slate-100 bg-white shadow-xl
-          transition-all duration-500 ease-out lg:hidden ${
-          isOpen ? "max-h-[calc(100dvh-70px)] opacity-100" : "max-h-0 opacity-0"
-        }`}
+          transition-all duration-500 ease-out lg:hidden ${isOpen ? "max-h-[calc(100dvh-70px)] opacity-100" : "max-h-0 opacity-0"
+          }`}
       >
         <ul className="flex flex-col gap-1 px-4 py-4 sm:px-6">
           {NAV_LINKS.map((link, i) => {
@@ -180,15 +177,13 @@ export default function Navbar() {
                 <a
                   href={link.href}
                   onClick={closeMenu}
-                  className={`flex items-center gap-3 rounded-lg px-4 py-3.5 text-base font-medium transition-all duration-200 ${
-                    isActive
-                      ? "bg-emerald-50 text-emerald-600"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                  }`}
+                  className={`flex items-center gap-3 rounded-lg px-4 py-3.5 text-base font-medium transition-all duration-200 ${isActive
+                    ? "bg-emerald-50 text-emerald-600"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
                 >
-                  <span className={`h-5 w-0.5 shrink-0 rounded-full transition-all duration-200 ${
-                    isActive ? "bg-emerald-500" : "bg-slate-200"
-                  }`} />
+                  <span className={`h-5 w-0.5 shrink-0 rounded-full transition-all duration-200 ${isActive ? "bg-emerald-500" : "bg-slate-200"
+                    }`} />
                   {link.label}
                 </a>
               </li>
