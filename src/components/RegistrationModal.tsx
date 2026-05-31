@@ -40,6 +40,12 @@ export default function RegistrationModal() {
     uni.toLowerCase().includes(institutionQuery.toLowerCase())
   );
 
+  const getPriceForDomain = (domain: string | null) => {
+    if (!domain) return 0;
+    const technicalDomains = ['AI & Prompt Engineering', 'Web Development', 'Cybersecurity'];
+    return technicalDomains.includes(domain) ? 499 : 399;
+  };
+
   useEffect(() => {
     const handleHashChange = () => {
       setIsOpen(window.location.hash === "#register");
@@ -125,10 +131,11 @@ export default function RegistrationModal() {
 
                 setIsSubmitting(true);
 
+                const priceInRupees = getPriceForDomain(activeDomain);
+
                 const options = {
                   key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-                  // ₹999 in paise
-                  amount: 99900,
+                  amount: priceInRupees * 100,
                   currency: "INR",
                   name: "Fraylon Technologies",
                   description: "Workshop Registration",
@@ -338,17 +345,28 @@ export default function RegistrationModal() {
                 </label>
               </div>
 
-              <div className="pt-6 border-t border-slate-200 flex justify-end gap-4">
-                <button type="button" onClick={closeModal} className="px-6 py-2.5 text-slate-600 font-medium hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="px-6 py-2.5 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition-all hover:shadow-lg hover:shadow-emerald-500/30 disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? "Opening payment..." : "Pay & Register"}
-                </button>
+              <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="w-full sm:w-auto text-left">
+                  {activeDomain ? (
+                    <span className="text-slate-700 font-medium text-lg">
+                      Amount to Pay: <strong className="text-emerald-700">₹{getPriceForDomain(activeDomain)}</strong>
+                    </span>
+                  ) : (
+                    <span className="text-slate-400 text-sm italic">Select a domain to see price</span>
+                  )}
+                </div>
+                <div className="flex gap-4 w-full sm:w-auto justify-end">
+                  <button type="button" onClick={closeModal} className="px-6 py-2.5 text-slate-600 font-medium hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="px-6 py-2.5 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition-all hover:shadow-lg hover:shadow-emerald-500/30 disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? "Opening payment..." : "Pay & Register"}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
