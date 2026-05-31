@@ -74,13 +74,60 @@ const OUTCOMES = [
   },
 ];
 
-const INTERNSHIP_POINTS = [
-  { label: "Duration", value: "1–3 months post-workshop" },
-  { label: "Mode", value: "Remote / Hybrid" },
-  { label: "Stipend", value: "Performance-based" },
-  { label: "Domains", value: "Dev, Design, Marketing, HR, Sales" },
-  { label: "Certificate", value: "Internship completion letter issued" },
-  { label: "Eligibility", value: "Top performers from both tracks" },
+const EVAL_STEPS = [
+  {
+    label: "Test",
+    desc: "Domain-specific knowledge assessment to evaluate conceptual understanding.",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+      </svg>
+    ),
+  },
+  {
+    label: "Project",
+    desc: "A hands-on project built during the program, reviewed by industry mentors.",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
+      </svg>
+    ),
+  },
+  {
+    label: "Assignment",
+    desc: "Practical tasks submitted and evaluated throughout the program.",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+      </svg>
+    ),
+  },
+];
+
+const YEAR_OPPORTUNITIES = [
+  {
+    years: "1st & 2nd Year Students",
+    badge: "Year 1 – 2",
+    badgeColor: "#0891b2",
+    badgeBg: "#e0f7fa",
+    badgeBorder: "#b2ebf2",
+    perks: [
+      { label: "Internship Opportunity", note: "Based on performance" },
+    ],
+    note: "Build foundational experience and get your first industry exposure through a structured internship.",
+  },
+  {
+    years: "3rd Year Students",
+    badge: "Year 3",
+    badgeColor: "#10b981",
+    badgeBg: "#ecfdf5",
+    badgeBorder: "#a7f3d0",
+    perks: [
+      { label: "Internship Opportunity", note: "Based on performance" },
+      { label: "PPO — Pre-Placement Offer", note: "Top performers only" },
+    ],
+    note: "Perform well and you could walk away with not just an internship, but a direct Pre-Placement Offer from Fraylon Technologies.",
+  },
 ];
 
 /* ── component ────────────────────────────────────────────────────────────── */
@@ -200,54 +247,108 @@ export default function WhatYoullLearnSection() {
           </div>
         </div>
 
-        {/* ── Row 2: Internship ─────────────────────────────────────────────── */}
-        <div
-          className="mt-8 overflow-hidden rounded-2xl border border-slate-200"
-          style={appear(0.25)}
-        >
-          {/* Header bar */}
-          <div className="flex flex-col gap-1 border-b border-slate-200 bg-slate-900 px-7 py-5 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+        {/* ── Row 2: Outcome After Workshop ────────────────────────────────── */}
+        <div className="mt-8 flex flex-col gap-6" style={appear(0.25)}>
+
+          {/* Evaluation process */}
+          <div className="overflow-hidden rounded-2xl border border-slate-200">
+            <div className="border-b border-slate-200 bg-slate-900 px-7 py-5">
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                Post-Workshop Opportunity
+                Post-Workshop Evaluation
               </p>
-              <h3 className="mt-0.5 text-xl font-bold text-white">Internship Program</h3>
+              <h3 className="mt-0.5 text-xl font-bold text-white">Outcome After the Workshop</h3>
+              <p className="mt-2 text-sm text-slate-400">
+                All participants will be evaluated across three components based on their selected domain.
+              </p>
             </div>
-            <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-400 ring-1 ring-emerald-500/30">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              Open for Top Performers
-            </span>
+            <div className="grid divide-y divide-slate-100 bg-white sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+              {EVAL_STEPS.map((step, i) => (
+                <div
+                  key={step.label}
+                  className="flex items-start gap-4 px-6 py-5"
+                  style={{
+                    opacity: visible ? 1 : 0,
+                    transition: `opacity 0.5s ease ${0.3 + i * 0.1}s`,
+                  }}
+                >
+                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                    {step.icon}
+                  </span>
+                  <div>
+                    <p className="text-sm font-bold text-slate-900">{step.label}</p>
+                    <p className="mt-0.5 text-xs leading-relaxed text-slate-500">{step.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Details grid */}
-          <div className="grid grid-cols-2 divide-x divide-y divide-slate-100 bg-white sm:grid-cols-3">
-            {INTERNSHIP_POINTS.map((point, i) => (
-              <div
-                key={point.label}
-                className="flex flex-col gap-1 px-6 py-5"
-                style={{
-                  opacity: visible ? 1 : 0,
-                  transition: `opacity 0.5s ease ${0.3 + i * 0.07}s`,
-                }}
-              >
-                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
-                  {point.label}
-                </p>
-                <p className="text-sm font-semibold text-slate-800">{point.value}</p>
-              </div>
-            ))}
+          {/* Year-wise opportunities */}
+          <div>
+            <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+              Opportunities Based on Performance
+            </p>
+            <div className="grid gap-5 sm:grid-cols-2">
+              {YEAR_OPPORTUNITIES.map((item, i) => (
+                <div
+                  key={item.years}
+                  className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                  style={{
+                    opacity: visible ? 1 : 0,
+                    transform: visible ? "none" : "translateY(16px)",
+                    transition: `opacity 0.5s ease ${0.45 + i * 0.12}s, transform 0.5s ease ${0.45 + i * 0.12}s`,
+                  }}
+                >
+                  {/* Top strip */}
+                  <div className="h-1" style={{ background: item.badgeColor }} />
+
+                  <div className="flex flex-1 flex-col gap-4 p-5">
+                    {/* Header */}
+                    <div className="flex items-center justify-between gap-3">
+                      <h4 className="text-base font-bold text-slate-900">{item.years}</h4>
+                      <span
+                        className="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+                        style={{ background: item.badgeBg, color: item.badgeColor, border: `1px solid ${item.badgeBorder}` }}
+                      >
+                        {item.badge}
+                      </span>
+                    </div>
+
+                    {/* Perks */}
+                    <ul className="flex flex-col gap-2.5">
+                      {item.perks.map((perk) => (
+                        <li key={perk.label} className="flex items-start gap-2.5">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 20 20" fill={item.badgeColor}>
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                          <div>
+                            <p className="text-sm font-semibold text-slate-800">{perk.label}</p>
+                            <p className="text-xs text-slate-400">{perk.note}</p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* Note */}
+                    <p className="mt-auto border-t border-slate-100 pt-3 text-xs leading-relaxed text-slate-500">
+                      {item.note}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* CTA strip */}
-          <div className="flex flex-col items-start gap-3 border-t border-slate-100 bg-slate-50 px-7 py-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col items-start gap-3 rounded-xl border border-slate-100 bg-slate-50 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-slate-500">
-              Top students get direct referrals to Fraylon&apos;s partner companies and startups.
+              Secure your spot now — opportunities are based on performance during the program.
             </p>
             <a
               href="#register"
               className="shrink-0 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-slate-700"
             >
-              Secure Your Spot
+              Register Now
             </a>
           </div>
         </div>
