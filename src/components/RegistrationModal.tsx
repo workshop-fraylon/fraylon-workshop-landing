@@ -2,17 +2,29 @@
 
 import { useEffect, useState } from "react";
 
-const UNIVERSITIES = [
-  "VIT Chennai",
-  "VIT Vellore",
-  "IIT Madras",
-  "IIT Delhi",
-  "BITS Pilani",
-  "NIT Trichy",
-  "SRM University",
-  "Anna University",
-  "Delhi University",
-  "Mumbai University"
+// Fallback list shown while JSON is loading
+const FALLBACK_COLLEGES = [
+  // All IITs
+  "IIT Bombay","IIT Delhi","IIT Madras","IIT Kanpur","IIT Kharagpur",
+  "IIT Roorkee","IIT Guwahati","IIT Hyderabad","IIT Indore","IIT Jodhpur",
+  "IIT Mandi","IIT Patna","IIT Ropar","IIT Bhubaneswar","IIT Gandhinagar",
+  "IIT Tirupati","IIT Dhanbad (ISM)","IIT Palakkad","IIT Jammu","IIT Goa",
+  "IIT Bhilai","IIT Dharwad","IIT Varanasi (BHU)",
+  // All NITs
+  "NIT Trichy","NIT Surathkal","NIT Warangal","NIT Calicut","NIT Rourkela",
+  "NIT Kurukshetra","NIT Silchar","NIT Durgapur","NIT Jamshedpur",
+  "NIT Allahabad (MNNIT)","NIT Nagpur (VNIT)","NIT Surat","NIT Patna",
+  "NIT Bhopal (MANIT)","NIT Hamirpur","NIT Jalandhar",
+  // Popular private & deemed
+  "BITS Pilani","BITS Goa","BITS Hyderabad",
+  "VIT Vellore","VIT Chennai","SRM University",
+  "Manipal Academy of Higher Education","Amity University Noida",
+  "Lovely Professional University (LPU)","Chandigarh University",
+  "Anna University","Delhi University","Mumbai University",
+  "Pune University","Osmania University","Jadavpur University",
+  "Calcutta University","Madras University","Bangalore University",
+  "Banaras Hindu University (BHU)","Aligarh Muslim University (AMU)",
+  "Jawaharlal Nehru University (JNU)",
 ];
 
 // Extend Window to include Razorpay (loaded via external script in layout)
@@ -35,10 +47,30 @@ export default function RegistrationModal() {
   const [institutionQuery, setInstitutionQuery] = useState("");
   const [showUniversities, setShowUniversities] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [collegeList, setCollegeList] = useState<string[]>(FALLBACK_COLLEGES);
+  const [collegesLoading, setCollegesLoading] = useState(false);
 
-  const filteredUniversities = UNIVERSITIES.filter((uni) =>
-    uni.toLowerCase().includes(institutionQuery.toLowerCase())
-  );
+  // Load comprehensive Indian colleges list from local JSON on first open
+  useEffect(() => {
+    if (!isOpen || collegeList !== FALLBACK_COLLEGES) return;
+    setCollegesLoading(true);
+    fetch("/india-colleges.json")
+      .then((r) => r.json())
+      .then((data: string[]) => {
+        const sorted = [...data].sort((a, b) => a.localeCompare(b));
+        if (sorted.length > 0) setCollegeList(sorted);
+      })
+      .catch(() => { /* keep fallback list */ })
+      .finally(() => setCollegesLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  const trimmedQuery = institutionQuery.trim().toLowerCase();
+  const filteredUniversities = trimmedQuery.length < 1
+    ? []
+    : collegeList.filter((uni) =>
+        uni.toLowerCase().includes(trimmedQuery)
+      ).slice(0, 10);
 
   const getPriceForDomain = (domain: string | null) => {
     if (!domain) return 0;
@@ -159,6 +191,12 @@ export default function RegistrationModal() {
 
                   theme: { color: "#10b981" },
 
+                  config: {
+                    display: {
+                      hide: [{ method: "paylater" }],
+                    },
+                  },
+
                   handler: async (response: { razorpay_payment_id: string }) => {
                     try {
                       const res = await fetch("/api/save-registration", {
@@ -274,7 +312,10 @@ export default function RegistrationModal() {
                     />
                   </div>
                   <div className="relative">
-                    <label htmlFor="institution" className="block text-sm font-medium text-slate-700 mb-1">College / Institution</label>
+                    <label htmlFor="institution" className="block text-sm font-medium text-slate-700 mb-1">
+                      College / Institution
+                      {collegesLoading && <span className="ml-2 text-xs font-normal text-slate-400">Loading colleges…</span>}
+                    </label>
                     <input
                       type="text"
                       id="institution"
@@ -286,7 +327,7 @@ export default function RegistrationModal() {
                       onFocus={() => setShowUniversities(true)}
                       onBlur={() => setTimeout(() => setShowUniversities(false), 200)}
                       className="w-full rounded-lg border border-slate-300 px-4 py-2.5 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
-                      placeholder="Search or enter your college..."
+                      placeholder="Search your college or university…"
                       required
                       autoComplete="off"
                     />
