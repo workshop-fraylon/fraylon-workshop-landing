@@ -21,7 +21,7 @@ export default function Home() {
         <TimelineSection />
         <TracksSection />
         <WhatYoullLearnSection />
-        <MentorsSection />
+        {/*<MentorsSection />*/}
         <FAQSection />
 
         <RegistrationModal />
