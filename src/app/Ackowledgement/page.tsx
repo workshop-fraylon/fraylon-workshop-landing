@@ -54,8 +54,8 @@ export default function AcknowledgementPage() {
             Registration Acknowledgement
           </h1>
           <p className="max-w-3xl text-base leading-8 text-slate-600 sm:text-lg">
-            Thank you for completing your registration for the Fraylon Technologies workshop.
-            We appreciate your interest and commitment to building career-ready skills.
+            Thank you for completing your registration for the Fraylon workshop.
+            We appreciate your interest and commitment to joining this industry readiness program.
           </p>
         </section>
 

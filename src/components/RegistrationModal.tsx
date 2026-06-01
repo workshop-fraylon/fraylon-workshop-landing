@@ -1,6 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+
+type SubmitPhase = "idle" | "checking" | "opening-payment";
+
+type AlertPopup = {
+  title: string;
+  message: string;
+  variant: "duplicate" | "error";
+};
 
 // ── Domain config ────────────────────────────────────────────────────────────
 const TECHNICAL_DOMAINS = [
@@ -26,6 +35,19 @@ const NON_TECHNICAL_PRICE = 399;
 function getPriceForDomain(domain: string | null): number {
   if (!domain) return 0;
   return TECHNICAL_DOMAINS.includes(domain) ? TECHNICAL_PRICE : NON_TECHNICAL_PRICE;
+}
+
+function dedupeColleges(names: string[]): string[] {
+  const seen = new Set<string>();
+  const unique: string[] = [];
+  for (const name of names) {
+    const trimmed = name.trim();
+    const key = trimmed.toLowerCase();
+    if (!trimmed || seen.has(key)) continue;
+    seen.add(key);
+    unique.push(trimmed);
+  }
+  return unique.sort((a, b) => a.localeCompare(b));
 }
 
 // ── College list ─────────────────────────────────────────────────────────────
@@ -74,6 +96,8 @@ function loadRazorpayScript(): Promise<boolean> {
 
 // ── Component ────────────────────────────────────────────────────────────────
 export default function RegistrationModal() {
+  const router = useRouter();
+  const emailInputRef = useRef<HTMLInputElement>(null);
   const [isOpen, setIsOpen]               = useState(false);
   const [fullName, setFullName]           = useState("");
   const [email, setEmail]                 = useState("");
@@ -82,26 +106,28 @@ export default function RegistrationModal() {
   const [activeDomain, setActiveDomain]   = useState<string | null>(null);
   const [institutionQuery, setInstitutionQuery] = useState("");
   const [showColleges, setShowColleges]   = useState(false);
-  const [isSubmitting, setIsSubmitting]   = useState(false);
-  const [collegeList, setCollegeList]     = useState<string[]>(FALLBACK_COLLEGES);
+  const [submitPhase, setSubmitPhase]     = useState<SubmitPhase>("idle");
+  const [alertPopup, setAlertPopup]       = useState<AlertPopup | null>(null);
+  const [formError, setFormError]         = useState<string | null>(null);
+  const [collegeList, setCollegeList]     = useState<string[]>(() => dedupeColleges(FALLBACK_COLLEGES));
   const [collegesLoading, setCollegesLoading] = useState(false);
 
   // Load comprehensive college list from public JSON on first open
   useEffect(() => {
-    if (!isOpen || collegeList !== FALLBACK_COLLEGES) return;
+    if (!isOpen) return;
     setCollegesLoading(true);
     fetch("/india-colleges.json")
       .then((r) => r.json())
       .then((data: string[]) => {
-        const sorted = [...data].sort((a, b) => a.localeCompare(b));
-        if (sorted.length > 0) setCollegeList(sorted);
+        const unique = dedupeColleges(data);
+        if (unique.length > 0) setCollegeList(unique);
       })
       .catch(() => {})
       .finally(() => setCollegesLoading(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
-  // Hash-based open/close
+  // Hash-based open/close functionality.
   useEffect(() => {
     const handle = () => {
       const open = window.location.hash === "#register";
@@ -125,19 +151,79 @@ export default function RegistrationModal() {
     : collegeList.filter((c) => c.toLowerCase().includes(trimmedQuery)).slice(0, 10);
 
   const price = getPriceForDomain(activeDomain);
+  const isSubmitting = submitPhase !== "idle";
+
+  const closeAlertPopup = () => {
+    const wasDuplicate = alertPopup?.variant === "duplicate";
+    setAlertPopup(null);
+    setSubmitPhase("idle");
+    if (wasDuplicate) {
+      setFormError("This email is already registered. Please use a different email address.");
+      requestAnimationFrame(() => {
+        emailInputRef.current?.focus();
+        emailInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
+    setAlertPopup(null);
 
     if (!activeDomain) { alert("Please select a domain before proceeding."); return; }
 
-    setIsSubmitting(true);
+    setSubmitPhase("checking");
+
+    try {
+      const checkRes = await fetch("/api/check-registration", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const check = await checkRes.json();
+
+      if (!checkRes.ok && !check.registered) {
+        setSubmitPhase("idle");
+        setAlertPopup({
+          title: "Could not verify email",
+          message: "We couldn't verify your email right now. Please check your connection and try again.",
+          variant: "error",
+        });
+        return;
+      }
+
+      if (check.registered) {
+        setSubmitPhase("idle");
+        setAlertPopup({
+          title: "Already registered",
+          message:
+            "This email is already registered for the Fraylon workshop. Please use a different email address to continue. If you believe this is a mistake, contact workshopfraylon@gmail.com.",
+          variant: "duplicate",
+        });
+        return;
+      }
+    } catch {
+      setSubmitPhase("idle");
+      setAlertPopup({
+        title: "Could not verify email",
+        message: "We couldn't verify your email right now. Please check your connection and try again.",
+        variant: "error",
+      });
+      return;
+    }
+
+    setSubmitPhase("opening-payment");
 
     // Ensure Razorpay script is loaded
     const loaded = await loadRazorpayScript();
     if (!loaded) {
-      alert("Failed to load payment gateway. Please check your internet connection and try again.");
-      setIsSubmitting(false);
+      setSubmitPhase("idle");
+      setAlertPopup({
+        title: "Payment unavailable",
+        message: "Failed to load the payment gateway. Please check your internet connection and try again.",
+        variant: "error",
+      });
       return;
     }
 
@@ -180,25 +266,53 @@ export default function RegistrationModal() {
           if (result.success) {
             setFullName(""); setEmail(""); setPhone("");
             setReferralCode(""); setInstitutionQuery(""); setActiveDomain(null);
+            setFormError(null);
             closeModal();
-            alert("Registration successful! We'll confirm your enrollment within one business day.");
+            router.push("/Ackowledgement");
+          } else if (result.code === "ALREADY_REGISTERED") {
+            setAlertPopup({
+              title: "Already registered",
+              message:
+                `Payment was received, but this email is already registered. Please contact workshopfraylon@gmail.com with your payment ID: ${response.razorpay_payment_id}`,
+              variant: "duplicate",
+            });
           } else {
-            alert("Payment received but registration save failed. Please contact workshopfraylon@gmail.com with payment ID: " + response.razorpay_payment_id);
+            setAlertPopup({
+              title: "Registration not saved",
+              message:
+                `Payment was received but we could not save your registration. Please contact workshopfraylon@gmail.com with payment ID: ${response.razorpay_payment_id}`,
+              variant: "error",
+            });
           }
         } catch {
-          alert("Payment received but a server error occurred. Please contact workshopfraylon@gmail.com with payment ID: " + response.razorpay_payment_id);
+          setAlertPopup({
+            title: "Registration not saved",
+            message:
+              `Payment was received but a server error occurred. Please contact workshopfraylon@gmail.com with payment ID: ${response.razorpay_payment_id}`,
+            variant: "error",
+          });
         } finally {
-          setIsSubmitting(false);
+          setSubmitPhase("idle");
         }
+      },
+      modal: {
+        ondismiss: () => {
+          setSubmitPhase("idle");
+        },
       },
     };
 
     const rzp = new window.Razorpay(options);
     rzp.on("payment.failed", () => {
-      setIsSubmitting(false);
-      alert("Payment failed. Please try again.");
+      setSubmitPhase("idle");
+      setAlertPopup({
+        title: "Payment failed",
+        message: "Your payment did not go through. Please try again.",
+        variant: "error",
+      });
     });
     rzp.open();
+    setSubmitPhase("idle");
   };
 
   if (!isOpen) return null;
@@ -277,6 +391,15 @@ export default function RegistrationModal() {
                 <p className="mt-1 text-sm text-slate-500">All fields are required unless marked optional.</p>
               </div>
 
+              {formError && (
+                <div
+                  role="alert"
+                  className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
+                >
+                  {formError}
+                </div>
+              )}
+
               {/* Step 1 — Personal info */}
               <div className="space-y-5">
                 <div className="flex items-center gap-3 border-b border-slate-100 pb-2">
@@ -291,8 +414,12 @@ export default function RegistrationModal() {
                   </div>
                   <div>
                     <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">Email address</label>
-                    <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-lg border border-slate-300 px-4 py-2.5 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500" required />
+                    <input ref={emailInputRef} id="email" type="email" value={email} onChange={(e) => { setEmail(e.target.value); setFormError(null); setAlertPopup(null); }}
+                      className={`w-full rounded-lg border px-4 py-2.5 transition-colors focus:outline-none focus:ring-1 ${
+                        formError
+                          ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                          : "border-slate-300 focus:border-emerald-500 focus:ring-emerald-500"
+                      }`} required />
                   </div>
                   <div>
                     <label htmlFor="phone" className="mb-1 block text-sm font-medium text-slate-700">Phone number</label>
@@ -321,8 +448,8 @@ export default function RegistrationModal() {
                     />
                     {showColleges && filteredColleges.length > 0 && (
                       <ul className="absolute z-20 mt-1 w-full overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg" style={{ maxHeight: 200 }}>
-                        {filteredColleges.map((c) => (
-                          <li key={c} onMouseDown={() => { setInstitutionQuery(c); setShowColleges(false); }}
+                        {filteredColleges.map((c, i) => (
+                          <li key={`${c}-${i}`} onMouseDown={() => { setInstitutionQuery(c); setShowColleges(false); }}
                             className="cursor-pointer px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-emerald-50">
                             {c}
                           </li>
@@ -413,13 +540,62 @@ export default function RegistrationModal() {
                   </button>
                   <button type="submit" disabled={isSubmitting}
                     className="rounded-lg bg-emerald-500 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/30 disabled:cursor-not-allowed disabled:opacity-60">
-                    {isSubmitting ? "Opening payment…" : `Pay ₹${price || "—"} & Register`}
+                    {submitPhase === "checking"
+                      ? "Checking email…"
+                      : submitPhase === "opening-payment"
+                        ? "Opening payment…"
+                        : `Pay ₹${price || "—"} & Register`}
                   </button>
                 </div>
               </div>
             </form>
           </div>
         </div>
+
+        {/* Alert popup — duplicate email / errors (no scroll needed) */}
+        {alertPopup && (
+          <div
+            className="absolute inset-0 z-[120] flex items-center justify-center bg-slate-900/50 p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reg-alert-title"
+            onClick={closeAlertPopup}
+          >
+            <div
+              className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full ${
+                  alertPopup.variant === "duplicate" ? "bg-amber-100 text-amber-600" : "bg-red-100 text-red-600"
+                }`}
+              >
+                {alertPopup.variant === "duplicate" ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 4.88c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                )}
+              </div>
+              <h4 id="reg-alert-title" className="text-center text-lg font-bold text-slate-900">
+                {alertPopup.title}
+              </h4>
+              <p className="mt-3 text-center text-sm leading-relaxed text-slate-600">
+                {alertPopup.message}
+              </p>
+              <button
+                type="button"
+                onClick={closeAlertPopup}
+                className="mt-6 w-full rounded-lg bg-emerald-500 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-600"
+              >
+                {alertPopup.variant === "duplicate" ? "Change email" : "OK"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
