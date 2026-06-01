@@ -8,7 +8,6 @@ const TECHNICAL_DOMAINS = [
   "Web Development",
   "UI/UX Design",
   "Cybersecurity",
-  "Cloud & DevOps",
   "SaaS Product Building",
 ];
 
