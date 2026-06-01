@@ -2,67 +2,116 @@
 
 import { useEffect, useState } from "react";
 
-const UNIVERSITIES = [
-  "VIT Chennai",
-  "VIT Vellore",
-  "IIT Madras",
-  "IIT Delhi",
-  "BITS Pilani",
-  "NIT Trichy",
-  "SRM University",
-  "Anna University",
-  "Delhi University",
-  "Mumbai University"
+// ── Domain config ────────────────────────────────────────────────────────────
+const TECHNICAL_DOMAINS = [
+  "AI & Prompt Engineering",
+  "Web Development",
+  "UI/UX Design",
+  "Cybersecurity",
+  "Cloud & DevOps",
+  "SaaS Product Building",
 ];
 
-// Extend Window to include Razorpay (loaded via external script in layout)
+const NON_TECHNICAL_DOMAINS = [
+  "Digital Marketing",
+  "HR & Recruitment",
+  "Sales Psychology",
+  "Brand Strategy",
+];
+
+const ALL_DOMAINS = [...TECHNICAL_DOMAINS, ...NON_TECHNICAL_DOMAINS];
+
+const TECHNICAL_PRICE = 499;
+const NON_TECHNICAL_PRICE = 399;
+
+function getPriceForDomain(domain: string | null): number {
+  if (!domain) return 0;
+  return TECHNICAL_DOMAINS.includes(domain) ? TECHNICAL_PRICE : NON_TECHNICAL_PRICE;
+}
+
+// ── College list ─────────────────────────────────────────────────────────────
+const FALLBACK_COLLEGES = [
+  "IIT Bombay","IIT Delhi","IIT Madras","IIT Kanpur","IIT Kharagpur",
+  "IIT Roorkee","IIT Guwahati","IIT Hyderabad","IIT Indore","IIT Jodhpur",
+  "IIT Mandi","IIT Patna","IIT Ropar","IIT Bhubaneswar","IIT Gandhinagar",
+  "IIT Tirupati","IIT Dhanbad (ISM)","IIT Palakkad","IIT Jammu","IIT Goa",
+  "IIT Bhilai","IIT Dharwad","IIT Varanasi (BHU)",
+  "NIT Trichy","NIT Surathkal","NIT Warangal","NIT Calicut","NIT Rourkela",
+  "NIT Kurukshetra","NIT Silchar","NIT Durgapur","NIT Jamshedpur",
+  "NIT Allahabad (MNNIT)","NIT Nagpur (VNIT)","NIT Surat","NIT Patna",
+  "NIT Bhopal (MANIT)","NIT Hamirpur","NIT Jalandhar",
+  "BITS Pilani","BITS Goa","BITS Hyderabad",
+  "VIT Vellore","VIT Chennai","SRM University",
+  "Manipal Academy of Higher Education","Amity University Noida",
+  "Lovely Professional University (LPU)","Chandigarh University",
+  "Anna University","Delhi University","Mumbai University",
+  "Pune University","Osmania University","Jadavpur University",
+  "Calcutta University","Madras University","Bangalore University",
+  "Banaras Hindu University (BHU)","Aligarh Muslim University (AMU)",
+  "Jawaharlal Nehru University (JNU)",
+];
+
+// ── Razorpay type ────────────────────────────────────────────────────────────
 declare global {
   interface Window {
-    Razorpay: new (options: Record<string, unknown>) => { open(): void; on(event: string, cb: (r: Record<string, unknown>) => void): void };
+    Razorpay: new (options: Record<string, unknown>) => {
+      open(): void;
+      on(event: string, cb: (r: Record<string, unknown>) => void): void;
+    };
   }
 }
 
+// Dynamically load Razorpay script if not already present
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window.Razorpay !== "undefined") { resolve(true); return; }
+    const s = document.createElement("script");
+    s.src = "https://checkout.razorpay.com/v1/checkout.js";
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.body.appendChild(s);
+  });
+}
+
+// ── Component ────────────────────────────────────────────────────────────────
 export default function RegistrationModal() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  // Controlled fields — needed so Razorpay prefill reads them at submit time
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [referralCode, setReferralCode] = useState("");
-
-  const [activeDomain, setActiveDomain] = useState<string | null>(null);
+  const [isOpen, setIsOpen]               = useState(false);
+  const [fullName, setFullName]           = useState("");
+  const [email, setEmail]                 = useState("");
+  const [phone, setPhone]                 = useState("");
+  const [referralCode, setReferralCode]   = useState("");
+  const [activeDomain, setActiveDomain]   = useState<string | null>(null);
   const [institutionQuery, setInstitutionQuery] = useState("");
-  const [showUniversities, setShowUniversities] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showColleges, setShowColleges]   = useState(false);
+  const [isSubmitting, setIsSubmitting]   = useState(false);
+  const [collegeList, setCollegeList]     = useState<string[]>(FALLBACK_COLLEGES);
+  const [collegesLoading, setCollegesLoading] = useState(false);
 
-  const filteredUniversities = UNIVERSITIES.filter((uni) =>
-    uni.toLowerCase().includes(institutionQuery.toLowerCase())
-  );
-
-  const getPriceForDomain = (domain: string | null) => {
-    if (!domain) return 0;
-    const technicalDomains = ['AI & Prompt Engineering', 'Web Development', 'Cybersecurity'];
-    return technicalDomains.includes(domain) ? 499 : 399;
-  };
-
+  // Load comprehensive college list from public JSON on first open
   useEffect(() => {
-    const handleHashChange = () => {
-      setIsOpen(window.location.hash === "#register");
-      if (window.location.hash === "#register") {
-        document.body.style.overflow = "hidden";
-      } else {
-        document.body.style.overflow = "";
-      }
-    };
+    if (!isOpen || collegeList !== FALLBACK_COLLEGES) return;
+    setCollegesLoading(true);
+    fetch("/india-colleges.json")
+      .then((r) => r.json())
+      .then((data: string[]) => {
+        const sorted = [...data].sort((a, b) => a.localeCompare(b));
+        if (sorted.length > 0) setCollegeList(sorted);
+      })
+      .catch(() => {})
+      .finally(() => setCollegesLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
-    handleHashChange(); // initial check
-
-    window.addEventListener("hashchange", handleHashChange);
-    return () => {
-      window.removeEventListener("hashchange", handleHashChange);
-      document.body.style.overflow = "";
+  // Hash-based open/close
+  useEffect(() => {
+    const handle = () => {
+      const open = window.location.hash === "#register";
+      setIsOpen(open);
+      document.body.style.overflow = open ? "hidden" : "";
     };
+    handle();
+    window.addEventListener("hashchange", handle);
+    return () => { window.removeEventListener("hashchange", handle); document.body.style.overflow = ""; };
   }, []);
 
   const closeModal = () => {
@@ -71,228 +120,212 @@ export default function RegistrationModal() {
     document.body.style.overflow = "";
   };
 
+  const trimmedQuery = institutionQuery.trim().toLowerCase();
+  const filteredColleges = trimmedQuery.length < 1
+    ? []
+    : collegeList.filter((c) => c.toLowerCase().includes(trimmedQuery)).slice(0, 10);
+
+  const price = getPriceForDomain(activeDomain);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!activeDomain) { alert("Please select a domain before proceeding."); return; }
+
+    setIsSubmitting(true);
+
+    // Ensure Razorpay script is loaded
+    const loaded = await loadRazorpayScript();
+    if (!loaded) {
+      alert("Failed to load payment gateway. Please check your internet connection and try again.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: price * 100,          // paise — fixed, user cannot modify
+      currency: "INR",
+      name: "Fraylon Technologies",
+      description: `Workshop Registration — ${activeDomain}`,
+      image: "/fraylon_logo2.png",
+      prefill: { name: fullName, email, contact: phone },
+      notes: { domain: activeDomain, referral_code: referralCode || "NONE" },
+      theme: { color: "#10b981" },
+      config: {
+        display: {
+          hide: [{ method: "paylater" }],
+          blocks: {
+            qr: {
+              name: "Pay via QR Code",
+              instruments: [{ method: "upi", flows: ["qr"] }],
+            },
+          },
+          sequence: ["block.qr", "block.default"],
+          preferences: { show_default_blocks: true },
+        },
+      },
+      handler: async (response: { razorpay_payment_id: string }) => {
+        try {
+          const res = await fetch("/api/save-registration", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              fullName, email, phone, referralCode,
+              collegeName: institutionQuery,
+              domainTrack: activeDomain,
+              razorpay_payment_id: response.razorpay_payment_id,
+            }),
+          });
+          const result = await res.json();
+          if (result.success) {
+            setFullName(""); setEmail(""); setPhone("");
+            setReferralCode(""); setInstitutionQuery(""); setActiveDomain(null);
+            closeModal();
+            alert("Registration successful! We'll confirm your enrollment within one business day.");
+          } else {
+            alert("Payment received but registration save failed. Please contact workshopfraylon@gmail.com with payment ID: " + response.razorpay_payment_id);
+          }
+        } catch {
+          alert("Payment received but a server error occurred. Please contact workshopfraylon@gmail.com with payment ID: " + response.razorpay_payment_id);
+        } finally {
+          setIsSubmitting(false);
+        }
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.on("payment.failed", () => {
+      setIsSubmitting(false);
+      alert("Payment failed. Please try again.");
+    });
+    rzp.open();
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm overflow-y-auto p-4 sm:p-6" onClick={closeModal}>
+    <div
+      className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-slate-900/60 p-3 backdrop-blur-sm sm:items-center sm:p-6"
+      onClick={closeModal}
+    >
       <div
-        className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl my-8 overflow-hidden animate-slide-down-in"
+        className="relative my-4 w-full max-w-4xl animate-slide-down-in overflow-hidden rounded-2xl bg-white shadow-2xl sm:my-8"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Close button */}
         <button
           onClick={closeModal}
-          className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"
-          aria-label="Close modal"
+          className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-900"
+          aria-label="Close"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
             <path d="M18 6L6 18M6 6l12 12" />
           </svg>
         </button>
 
-        <div className="flex flex-col md:flex-row h-full">
-          {/* Left Side: Intro */}
-          <div className="bg-slate-50 p-8 md:p-12 md:w-1/3 border-b md:border-b-0 md:border-r border-slate-200 flex flex-col justify-center">
-            <span className="text-emerald-600 font-semibold text-sm uppercase tracking-wider mb-2 block">Registration</span>
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Reserve your seat</h2>
-            <p className="text-slate-600 mb-8">
-              Complete the form and a Fraylon advisor will confirm your enrollment within one business day. We respect your time and your inbox.
+        <div className="flex flex-col md:flex-row">
+          {/* ── Left sidebar — hidden on mobile ── */}
+          <div className="hidden md:flex md:w-1/3 flex-col justify-center border-r border-slate-200 bg-slate-50 p-10">
+            <span className="mb-2 block text-sm font-semibold uppercase tracking-wider text-emerald-600">Registration</span>
+            <h2 className="mb-4 text-2xl font-bold text-slate-900">Reserve your seat</h2>
+            <p className="mb-8 text-sm leading-relaxed text-slate-600">
+              Complete the form and a Fraylon advisor will confirm your enrollment within one business day.
             </p>
-            <ul className="space-y-4 mb-8 text-slate-700">
-              <li className="flex items-center gap-3">
-                <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
-                Flexible rescheduling
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
-                Invoice billing available
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
-                Confirmation within one business day
-              </li>
+            <ul className="mb-8 space-y-3 text-sm text-slate-700">
+              {["Flexible rescheduling", "Invoice billing available", "Confirmation within one business day"].map((t) => (
+                <li key={t} className="flex items-center gap-3">
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+                  {t}
+                </li>
+              ))}
             </ul>
-            <div className="mt-auto pt-8 border-t border-slate-200">
-              <strong className="block text-slate-900 mb-1">Need help?</strong>
-              <span className="text-slate-600">Email <a href="mailto:contact@fraylontech.com" className="text-emerald-600 hover:underline">workshopfraylon@gmail.com</a></span>
+
+            {/* Pricing summary on sidebar */}
+            <div className="rounded-xl border border-slate-200 bg-white p-4">
+              <p className="mb-2 text-xs font-bold uppercase tracking-widest text-slate-400">Registration Fee</p>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-600">Technical domains</span>
+                <span className="font-bold text-slate-900">₹{TECHNICAL_PRICE}</span>
+              </div>
+              <div className="mt-1 flex items-center justify-between text-sm">
+                <span className="text-slate-600">Non-technical domains</span>
+                <span className="font-bold text-slate-900">₹{NON_TECHNICAL_PRICE}</span>
+              </div>
+            </div>
+
+            <div className="mt-auto border-t border-slate-200 pt-6">
+              <strong className="block text-sm text-slate-900">Need help?</strong>
+              <a href="mailto:workshopfraylon@gmail.com" className="text-sm text-emerald-600 hover:underline">workshopfraylon@gmail.com</a>
             </div>
           </div>
 
-          {/* Right Side: Form */}
-          <div className="p-8 md:p-12 md:w-2/3 max-h-[80vh] overflow-y-auto">
-            <form
-              className="space-y-10"
-              onSubmit={async (e) => {
-                e.preventDefault();
+          {/* ── Right: form ── */}
+          <div className="flex w-full flex-col overflow-y-auto md:w-2/3" style={{ maxHeight: "92dvh" }}>
 
-                if (!activeDomain) {
-                  alert("Please select a domain before proceeding.");
-                  return;
-                }
-
-                setIsSubmitting(true);
-
-                const priceInRupees = getPriceForDomain(activeDomain);
-
-                const options = {
-                  key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-                  amount: priceInRupees * 100,
-                  currency: "INR",
-                  name: "Fraylon Technologies",
-                  description: "Workshop Registration",
-                  image: "/fraylon_logo.jpeg",
-
-                  // Prefill from controlled state
-                  prefill: {
-                    name: fullName,
-                    email: email,
-                    contact: phone,
-                  },
-
-                  theme: { color: "#10b981" },
-
-                  handler: async (response: { razorpay_payment_id: string }) => {
-                    try {
-                      const res = await fetch("/api/save-registration", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          fullName,
-                          email,
-                          phone,
-                          referralCode,
-                          collegeName: institutionQuery,
-                          domainTrack: activeDomain,
-                          razorpay_payment_id: response.razorpay_payment_id,
-                        }),
-                      });
-
-                      const result = await res.json();
-
-                      if (result.success) {
-                        // Reset all controlled state
-                        setFullName("");
-                        setEmail("");
-                        setPhone("");
-                        setReferralCode("");
-                        setInstitutionQuery("");
-                        setActiveDomain(null);
-
-                        closeModal();
-                        alert("Registration successful! We'll confirm your enrollment within one business day.");
-                      } else {
-                        alert("Payment was received but we couldn't save your registration. Please contact contact@fraylontech.com with your payment ID: " + response.razorpay_payment_id);
-                      }
-                    } catch {
-                      alert("Payment received but server error occurred. Please contact contact@fraylontech.com with your payment ID: " + response.razorpay_payment_id);
-                    } finally {
-                      setIsSubmitting(false);
-                    }
-                  },
-                };
-
-                const rzp = new window.Razorpay(options);
-
-                rzp.on("payment.failed", () => {
-                  setIsSubmitting(false);
-                  alert("Payment failed. Please try again.");
-                });
-
-                rzp.open();
-              }}
-            >
+            {/* Mobile compact header */}
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-4 py-3 md:hidden">
               <div>
-                <h3 className="text-xl font-bold text-slate-900 mb-1">Applicant details</h3>
-                <p className="text-sm text-slate-500">All fields are required unless marked optional.</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-emerald-600">Registration</p>
+                <p className="text-base font-bold text-slate-900">Reserve your seat</p>
+              </div>
+              <a href="mailto:workshopfraylon@gmail.com" className="text-xs text-emerald-600 underline underline-offset-2">Need help?</a>
+            </div>
+
+            <form className="space-y-8 p-5 sm:p-8 md:p-10" onSubmit={handleSubmit}>
+              <div>
+                <h3 className="text-xl font-bold text-slate-900">Applicant details</h3>
+                <p className="mt-1 text-sm text-slate-500">All fields are required unless marked optional.</p>
               </div>
 
-              {/* Step 1 */}
-              <div className="space-y-6">
+              {/* Step 1 — Personal info */}
+              <div className="space-y-5">
                 <div className="flex items-center gap-3 border-b border-slate-100 pb-2">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-700">1</span>
                   <span className="font-semibold text-slate-900">Personal information</span>
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="fullName" className="block text-sm font-medium text-slate-700 mb-1">Full name</label>
-                    <input
-                      type="text"
-                      id="fullName"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="w-full rounded-lg border border-slate-300 px-4 py-2.5 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
-                      required
-                    />
+                    <label htmlFor="fullName" className="mb-1 block text-sm font-medium text-slate-700">Full name</label>
+                    <input id="fullName" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)}
+                      className="w-full rounded-lg border border-slate-300 px-4 py-2.5 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500" required />
                   </div>
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">Email address</label>
-                    <input
-                      type="email"
-                      id="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-lg border border-slate-300 px-4 py-2.5 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
-                      required
-                    />
+                    <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">Email address</label>
+                    <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                      className="w-full rounded-lg border border-slate-300 px-4 py-2.5 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500" required />
                   </div>
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1">Phone number</label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full rounded-lg border border-slate-300 px-4 py-2.5 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
-                      required
-                    />
+                    <label htmlFor="phone" className="mb-1 block text-sm font-medium text-slate-700">Phone number</label>
+                    <input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
+                      className="w-full rounded-lg border border-slate-300 px-4 py-2.5 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500" required />
                   </div>
                   <div>
-                    <label
-                      htmlFor="referralCode"
-                      className="block text-sm font-medium text-slate-700 mb-1"
-                    >
-                      Referral Code
-                      <span className="text-slate-400 text-xs ml-1">(Optional)</span>
+                    <label htmlFor="referralCode" className="mb-1 block text-sm font-medium text-slate-700">
+                      Referral Code <span className="ml-1 text-xs text-slate-400">(Optional)</span>
                     </label>
-
-                    <input
-                      type="text"
-                      id="referralCode"
-                      value={referralCode}
-                      onChange={(e) => setReferralCode(e.target.value)}
-                      className="w-full rounded-lg border border-slate-300 px-4 py-2.5 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
+                    <input id="referralCode" type="text" value={referralCode} onChange={(e) => setReferralCode(e.target.value)}
                       placeholder="Enter ambassador referral code"
-                    />
+                      className="w-full rounded-lg border border-slate-300 px-4 py-2.5 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500" />
                   </div>
-                  <div className="relative">
-                    <label htmlFor="institution" className="block text-sm font-medium text-slate-700 mb-1">College / Institution</label>
-                    <input
-                      type="text"
-                      id="institution"
-                      value={institutionQuery}
-                      onChange={(e) => {
-                        setInstitutionQuery(e.target.value);
-                        setShowUniversities(true);
-                      }}
-                      onFocus={() => setShowUniversities(true)}
-                      onBlur={() => setTimeout(() => setShowUniversities(false), 200)}
-                      className="w-full rounded-lg border border-slate-300 px-4 py-2.5 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
-                      placeholder="Search or enter your college..."
-                      required
-                      autoComplete="off"
+                  <div className="relative sm:col-span-2">
+                    <label htmlFor="institution" className="mb-1 block text-sm font-medium text-slate-700">
+                      College / Institution
+                      {collegesLoading && <span className="ml-2 text-xs font-normal text-slate-400">Loading colleges…</span>}
+                    </label>
+                    <input id="institution" type="text" value={institutionQuery} autoComplete="off" required
+                      onChange={(e) => { setInstitutionQuery(e.target.value); setShowColleges(true); }}
+                      onFocus={() => setShowColleges(true)}
+                      onBlur={() => setTimeout(() => setShowColleges(false), 150)}
+                      placeholder="Search your college or university…"
+                      className="w-full rounded-lg border border-slate-300 px-4 py-2.5 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                     />
-                    {showUniversities && filteredUniversities.length > 0 && (
-                      <ul className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                        {filteredUniversities.map((uni) => (
-                          <li
-                            key={uni}
-                            onMouseDown={() => {
-                              setInstitutionQuery(uni);
-                              setShowUniversities(false);
-                            }}
-                            className="px-4 py-2 hover:bg-emerald-50 cursor-pointer text-sm text-slate-700 transition-colors"
-                          >
-                            {uni}
+                    {showColleges && filteredColleges.length > 0 && (
+                      <ul className="absolute z-20 mt-1 w-full overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg" style={{ maxHeight: 200 }}>
+                        {filteredColleges.map((c) => (
+                          <li key={c} onMouseDown={() => { setInstitutionQuery(c); setShowColleges(false); }}
+                            className="cursor-pointer px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-emerald-50">
+                            {c}
                           </li>
                         ))}
                       </ul>
@@ -301,70 +334,87 @@ export default function RegistrationModal() {
                 </div>
               </div>
 
-              {/* Step 2 */}
-              <div className="space-y-6">
+              {/* Step 2 — Domain */}
+              <div className="space-y-4">
                 <div className="flex items-center gap-3 border-b border-slate-100 pb-2">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-700">2</span>
                   <span className="font-semibold text-slate-900">Choose your domain</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {["AI & Prompt Engineering", "Web Development", "UI/UX Design", "Cybersecurity", "Digital Marketing", "HR & Recruitment", "Sales Psychology", "Brand Strategy"].map(domain => (
-                    <button
-                      key={domain}
-                      type="button"
-                      onClick={() => setActiveDomain(domain)}
-                      className={`flex flex-col items-start p-4 rounded-xl border text-left transition-all ${activeDomain === domain
-                        ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
-                        : "border-slate-200 hover:border-emerald-300 hover:bg-slate-50"
-                        }`}
-                    >
-                      <span className={`font-semibold ${activeDomain === domain ? "text-emerald-700" : "text-slate-900"}`}>{domain}</span>
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Technical — ₹{TECHNICAL_PRICE}</p>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {TECHNICAL_DOMAINS.map((domain) => (
+                    <button key={domain} type="button" onClick={() => setActiveDomain(domain)}
+                      className={`flex items-center justify-between rounded-xl border p-4 text-left transition-all ${
+                        activeDomain === domain
+                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
+                          : "border-slate-200 hover:border-emerald-300 hover:bg-slate-50"
+                      }`}>
+                      <span className={`text-sm font-semibold ${activeDomain === domain ? "text-emerald-700" : "text-slate-900"}`}>{domain}</span>
+                      <span className={`ml-2 shrink-0 text-xs font-bold ${activeDomain === domain ? "text-emerald-600" : "text-slate-400"}`}>₹{TECHNICAL_PRICE}</span>
+                    </button>
+                  ))}
+                </div>
+
+                <p className="pt-1 text-xs font-bold uppercase tracking-widest text-slate-400">Non-Technical — ₹{NON_TECHNICAL_PRICE}</p>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {NON_TECHNICAL_DOMAINS.map((domain) => (
+                    <button key={domain} type="button" onClick={() => setActiveDomain(domain)}
+                      className={`flex items-center justify-between rounded-xl border p-4 text-left transition-all ${
+                        activeDomain === domain
+                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
+                          : "border-slate-200 hover:border-emerald-300 hover:bg-slate-50"
+                      }`}>
+                      <span className={`text-sm font-semibold ${activeDomain === domain ? "text-emerald-700" : "text-slate-900"}`}>{domain}</span>
+                      <span className={`ml-2 shrink-0 text-xs font-bold ${activeDomain === domain ? "text-emerald-600" : "text-slate-400"}`}>₹{NON_TECHNICAL_PRICE}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Step 3 */}
-              <div className="space-y-6">
+              {/* Step 3 — Motivation */}
+              <div className="space-y-4">
                 <div className="flex items-center gap-3 border-b border-slate-100 pb-2">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-700">3</span>
                   <span className="font-semibold text-slate-900">Tell us about yourself</span>
                 </div>
-
                 <div>
-                  <label htmlFor="motivation" className="block text-sm font-medium text-slate-700 mb-1">Why do you want to join?</label>
-                  <textarea id="motivation" rows={4} className="w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors resize-none" placeholder="Share your goals, what you'd like to learn, and how this workshop fits your path." required></textarea>
+                  <label htmlFor="motivation" className="mb-1 block text-sm font-medium text-slate-700">Why do you want to join?</label>
+                  <textarea id="motivation" rows={3} required placeholder="Share your goals and what you'd like to learn."
+                    className="w-full resize-none rounded-lg border border-slate-300 px-4 py-3 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500" />
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 pt-4">
-                <input type="checkbox" id="agree" className="mt-1 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" required />
+              {/* Agreement */}
+              <div className="flex items-start gap-3">
+                <input type="checkbox" id="agree" required className="mt-1 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
                 <label htmlFor="agree" className="text-sm text-slate-600">
                   I agree to receive workshop information from Fraylon Technologies and accept the privacy policy.
                 </label>
               </div>
 
-              <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="w-full sm:w-auto text-left">
+              {/* Footer — price + submit */}
+              <div className="flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
+                <div>
                   {activeDomain ? (
-                    <span className="text-slate-700 font-medium text-lg">
-                      Amount to Pay: <strong className="text-emerald-700">₹{getPriceForDomain(activeDomain)}</strong>
-                    </span>
+                    <div>
+                      <p className="text-xs text-slate-400">{activeDomain}</p>
+                      <p className="text-lg font-bold text-slate-900">
+                        Amount to Pay: <span className="text-emerald-600">₹{price}</span>
+                      </p>
+                    </div>
                   ) : (
-                    <span className="text-slate-400 text-sm italic">Select a domain to see price</span>
+                    <p className="text-sm italic text-slate-400">Select a domain to see price</p>
                   )}
                 </div>
-                <div className="flex gap-4 w-full sm:w-auto justify-end">
-                  <button type="button" onClick={closeModal} className="px-6 py-2.5 text-slate-600 font-medium hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+                <div className="flex gap-3">
+                  <button type="button" onClick={closeModal}
+                    className="rounded-lg px-5 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900">
                     Cancel
                   </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="px-6 py-2.5 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition-all hover:shadow-lg hover:shadow-emerald-500/30 disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? "Opening payment..." : "Pay & Register"}
+                  <button type="submit" disabled={isSubmitting}
+                    className="rounded-lg bg-emerald-500 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/30 disabled:cursor-not-allowed disabled:opacity-60">
+                    {isSubmitting ? "Opening payment…" : `Pay ₹${price || "—"} & Register`}
                   </button>
                 </div>
               </div>
