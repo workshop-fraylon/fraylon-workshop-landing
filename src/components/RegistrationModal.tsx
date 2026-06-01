@@ -2,29 +2,17 @@
 
 import { useEffect, useState } from "react";
 
-// Fallback list shown while JSON is loading
-const FALLBACK_COLLEGES = [
-  // All IITs
-  "IIT Bombay","IIT Delhi","IIT Madras","IIT Kanpur","IIT Kharagpur",
-  "IIT Roorkee","IIT Guwahati","IIT Hyderabad","IIT Indore","IIT Jodhpur",
-  "IIT Mandi","IIT Patna","IIT Ropar","IIT Bhubaneswar","IIT Gandhinagar",
-  "IIT Tirupati","IIT Dhanbad (ISM)","IIT Palakkad","IIT Jammu","IIT Goa",
-  "IIT Bhilai","IIT Dharwad","IIT Varanasi (BHU)",
-  // All NITs
-  "NIT Trichy","NIT Surathkal","NIT Warangal","NIT Calicut","NIT Rourkela",
-  "NIT Kurukshetra","NIT Silchar","NIT Durgapur","NIT Jamshedpur",
-  "NIT Allahabad (MNNIT)","NIT Nagpur (VNIT)","NIT Surat","NIT Patna",
-  "NIT Bhopal (MANIT)","NIT Hamirpur","NIT Jalandhar",
-  // Popular private & deemed
-  "BITS Pilani","BITS Goa","BITS Hyderabad",
-  "VIT Vellore","VIT Chennai","SRM University",
-  "Manipal Academy of Higher Education","Amity University Noida",
-  "Lovely Professional University (LPU)","Chandigarh University",
-  "Anna University","Delhi University","Mumbai University",
-  "Pune University","Osmania University","Jadavpur University",
-  "Calcutta University","Madras University","Bangalore University",
-  "Banaras Hindu University (BHU)","Aligarh Muslim University (AMU)",
-  "Jawaharlal Nehru University (JNU)",
+const UNIVERSITIES = [
+  "VIT Chennai",
+  "VIT Vellore",
+  "IIT Madras",
+  "IIT Delhi",
+  "BITS Pilani",
+  "NIT Trichy",
+  "SRM University",
+  "Anna University",
+  "Delhi University",
+  "Mumbai University"
 ];
 
 // Extend Window to include Razorpay (loaded via external script in layout)
@@ -47,30 +35,10 @@ export default function RegistrationModal() {
   const [institutionQuery, setInstitutionQuery] = useState("");
   const [showUniversities, setShowUniversities] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [collegeList, setCollegeList] = useState<string[]>(FALLBACK_COLLEGES);
-  const [collegesLoading, setCollegesLoading] = useState(false);
 
-  // Load comprehensive Indian colleges list from local JSON on first open
-  useEffect(() => {
-    if (!isOpen || collegeList !== FALLBACK_COLLEGES) return;
-    setCollegesLoading(true);
-    fetch("/india-colleges.json")
-      .then((r) => r.json())
-      .then((data: string[]) => {
-        const sorted = [...data].sort((a, b) => a.localeCompare(b));
-        if (sorted.length > 0) setCollegeList(sorted);
-      })
-      .catch(() => { /* keep fallback list */ })
-      .finally(() => setCollegesLoading(false));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
-
-  const trimmedQuery = institutionQuery.trim().toLowerCase();
-  const filteredUniversities = trimmedQuery.length < 1
-    ? []
-    : collegeList.filter((uni) =>
-        uni.toLowerCase().includes(trimmedQuery)
-      ).slice(0, 10);
+  const filteredUniversities = UNIVERSITIES.filter((uni) =>
+    uni.toLowerCase().includes(institutionQuery.toLowerCase())
+  );
 
   const getPriceForDomain = (domain: string | null) => {
     if (!domain) return 0;
@@ -106,62 +74,53 @@ export default function RegistrationModal() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center bg-slate-900/60 backdrop-blur-sm overflow-y-auto p-3 sm:p-6 sm:items-center" onClick={closeModal}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm overflow-y-auto p-4 sm:p-6" onClick={closeModal}>
       <div
-        className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl my-4 sm:my-8 overflow-hidden animate-slide-down-in"
+        className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl my-8 overflow-hidden animate-slide-down-in"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={closeModal}
-          className="absolute top-3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"
+          className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"
           aria-label="Close modal"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
             <path d="M18 6L6 18M6 6l12 12" />
           </svg>
         </button>
 
-        <div className="flex flex-col md:flex-row">
-          {/* Left Side: Intro — hidden on mobile, visible md+ */}
-          <div className="hidden md:flex bg-slate-50 p-10 md:w-1/3 border-r border-slate-200 flex-col justify-center">
+        <div className="flex flex-col md:flex-row h-full">
+          {/* Left Side: Intro */}
+          <div className="bg-slate-50 p-8 md:p-12 md:w-1/3 border-b md:border-b-0 md:border-r border-slate-200 flex flex-col justify-center">
             <span className="text-emerald-600 font-semibold text-sm uppercase tracking-wider mb-2 block">Registration</span>
-            <h2 className="text-2xl font-bold text-slate-900 mb-4">Reserve your seat</h2>
-            <p className="text-slate-600 mb-8 text-sm leading-relaxed">
-              Complete the form and a Fraylon advisor will confirm your enrollment within one business day.
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">Reserve your seat</h2>
+            <p className="text-slate-600 mb-8">
+              Complete the form and a Fraylon advisor will confirm your enrollment within one business day. We respect your time and your inbox.
             </p>
-            <ul className="space-y-3 mb-8 text-slate-700 text-sm">
+            <ul className="space-y-4 mb-8 text-slate-700">
               <li className="flex items-center gap-3">
-                <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500"></span>
+                <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
                 Flexible rescheduling
               </li>
               <li className="flex items-center gap-3">
-                <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500"></span>
+                <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
                 Invoice billing available
               </li>
               <li className="flex items-center gap-3">
-                <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500"></span>
+                <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
                 Confirmation within one business day
               </li>
             </ul>
-            <div className="mt-auto pt-6 border-t border-slate-200">
-              <strong className="block text-slate-900 mb-1 text-sm">Need help?</strong>
-              <span className="text-slate-600 text-sm">Email <a href="mailto:workshopfraylon@gmail.com" className="text-emerald-600 hover:underline">workshopfraylon@gmail.com</a></span>
+            <div className="mt-auto pt-8 border-t border-slate-200">
+              <strong className="block text-slate-900 mb-1">Need help?</strong>
+              <span className="text-slate-600">Email <a href="mailto:contact@fraylontech.com" className="text-emerald-600 hover:underline">workshopfraylon@gmail.com</a></span>
             </div>
           </div>
 
-          {/* Right Side: Form — full width on mobile */}
-          <div className="w-full md:w-2/3 flex flex-col max-h-[92dvh] md:max-h-[88vh] overflow-y-auto">
-
-            {/* Mobile-only compact header */}
-            <div className="md:hidden sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-4 py-3">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-emerald-600">Registration</p>
-                <p className="text-base font-bold text-slate-900">Reserve your seat</p>
-              </div>
-              <a href="mailto:workshopfraylon@gmail.com" className="text-xs text-emerald-600 underline underline-offset-2">Need help?</a>
-            </div>
+          {/* Right Side: Form */}
+          <div className="p-8 md:p-12 md:w-2/3 max-h-[80vh] overflow-y-auto">
             <form
-              className="space-y-8 p-5 sm:p-8 md:p-10"
+              className="space-y-10"
               onSubmit={async (e) => {
                 e.preventDefault();
 
@@ -190,20 +149,6 @@ export default function RegistrationModal() {
                   },
 
                   theme: { color: "#10b981" },
-
-                  config: {
-                    display: {
-                      hide: [{ method: "paylater" }],
-                      blocks: {
-                        qr: {
-                          name: "Pay via QR Code",
-                          instruments: [{ method: "upi", flows: ["qr"] }],
-                        },
-                      },
-                      sequence: ["block.qr", "block.default"],
-                      preferences: { show_default_blocks: true },
-                    },
-                  },
 
                   handler: async (response: { razorpay_payment_id: string }) => {
                     try {
@@ -320,10 +265,7 @@ export default function RegistrationModal() {
                     />
                   </div>
                   <div className="relative">
-                    <label htmlFor="institution" className="block text-sm font-medium text-slate-700 mb-1">
-                      College / Institution
-                      {collegesLoading && <span className="ml-2 text-xs font-normal text-slate-400">Loading colleges…</span>}
-                    </label>
+                    <label htmlFor="institution" className="block text-sm font-medium text-slate-700 mb-1">College / Institution</label>
                     <input
                       type="text"
                       id="institution"
@@ -335,7 +277,7 @@ export default function RegistrationModal() {
                       onFocus={() => setShowUniversities(true)}
                       onBlur={() => setTimeout(() => setShowUniversities(false), 200)}
                       className="w-full rounded-lg border border-slate-300 px-4 py-2.5 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
-                      placeholder="Search your college or university…"
+                      placeholder="Search or enter your college..."
                       required
                       autoComplete="off"
                     />
