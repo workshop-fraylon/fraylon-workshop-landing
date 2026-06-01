@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 const NAV_LINKS = [
@@ -73,7 +74,7 @@ export default function Navbar() {
       <nav className="mx-auto flex h-[70px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
         {/* ── Logo ──────────────────────────────────────────────────────── */}
-        <a
+        <Link
           href="/"
           onClick={closeMenu}
           className="flex shrink-0 items-center transition-opacity duration-200 hover:opacity-80"
@@ -87,7 +88,7 @@ export default function Navbar() {
             priority
             className="h-10 w-auto object-contain"
           />
-        </a>
+        </Link>
 
         {/* ── Desktop nav links ──────────────────────────────────────────── */}
         <ul className="hidden items-center gap-1 lg:flex">

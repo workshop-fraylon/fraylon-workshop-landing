@@ -5,7 +5,6 @@ import Navbar from "@/components/Navbar";
 import TimelineSection from "@/components/TimelineSection"; //  CORRECT (No curly braces)
 import TracksSection from "@/components/TracksSection";
 import WhatYoullLearnSection from "@/components/WhatYoullLearnSection";
-import MentorsSection from "@/components/MentorsSection";
 import FAQSection from "@/components/FAQSection";
 
 import RegistrationModal from "@/components/RegistrationModal";
