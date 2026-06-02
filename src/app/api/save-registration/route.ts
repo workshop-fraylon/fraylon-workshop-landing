@@ -6,9 +6,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     const { fullName, email, phone, collegeName, domainTrack, razorpay_payment_id, referralCode } = body;
+    const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
 
     // Basic validation — all fields are required
-    if (!fullName || !email || !phone || !collegeName || !domainTrack || !razorpay_payment_id) {
+    if (!fullName || !normalizedEmail || !phone || !collegeName || !domainTrack || !razorpay_payment_id) {
       return NextResponse.json(
         { success: false, error: "Missing required fields." },
         { status: 400 }
@@ -30,9 +31,26 @@ export async function POST(request: NextRequest) {
     // Initialize the Supabase admin client using service role key (bypasses RLS)
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    const { data: existing } = await supabase
+      .from("registrations")
+      .select("id")
+      .ilike("email", normalizedEmail)
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          code: "ALREADY_REGISTERED",
+          error: "This email is already registered for the workshop.",
+        },
+        { status: 409 },
+      );
+    }
+
     const payload = {
       full_name: fullName,
-      email,
+      email: normalizedEmail,
       phone,
       college_name: collegeName,
       domain_track: domainTrack,
