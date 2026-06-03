@@ -187,7 +187,7 @@ function WorkshopVisual() {
       {/* Floating badge — top right */}
       <div className="animate-float absolute -right-2 -top-2 z-20 rounded-xl border border-[--color-border] bg-white px-3 py-2 shadow-lg sm:-right-4 sm:-top-4 sm:px-4 sm:py-3">
         <p className="text-xs font-semibold uppercase tracking-widest text-[--color-text-muted]">Next Batch</p>
-        <p className="text-sm font-bold text-[--color-navy] sm:text-base">8 – 23 Jun 2026</p>
+        <p className="text-sm font-bold text-[--color-navy] sm:text-base">15 – 30 Jun 2026</p>
       </div>
 
       {/* Floating badge — bottom left */}
