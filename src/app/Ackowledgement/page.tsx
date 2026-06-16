@@ -108,12 +108,12 @@ export default function AcknowledgementPage() {
                 >
                   Return to homepage
                 </Link>
-                <Link
+                <a
                   href="/#about"
                   className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
                 >
                   View workshop information
-                </Link>
+                </a>
               </div>
             </div>
           </div>
@@ -126,4 +126,3 @@ export default function AcknowledgementPage() {
     </main>
   );
 }
-
